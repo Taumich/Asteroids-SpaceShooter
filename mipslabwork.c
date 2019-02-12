@@ -59,6 +59,6 @@ void labwork( void ) {
   if (pressed & 4) {
     spaceY--;
   }
-  display_debug(&spaceY);
+  // display_debug(&spaceY);
   display_update();
 }

@@ -3,19 +3,20 @@
 void consoleRender (int x, int y, int *art, int length)
 {
     int size = sizeof(art)/sizeof(int);
-    printf("size = %d\n", size);
+    printf("\n");
     int width = 20;
     int height = 10;
     int display[width][height];
     for (int i = 0; i < height; i++ )
     {
-        if (i < length)
+        for (int j = 0; j < width; j++)
         {
-            int compare = art[i];
-            for (int j = 0; j < width; j++)
+            if (j < length)
             {
+                int compare = art[j];
                 //printf(" <%d> ",compare);
-                if (compare & 0x1 == 1)
+                compare = compare >> i;
+                if (i < length && compare & 0x1 == 1)
                 {
                     printf("X");
                 }
@@ -23,14 +24,13 @@ void consoleRender (int x, int y, int *art, int length)
                 {
                     printf(" ");
                 }
-                compare = compare >> 1;
             }
-        }
-        else
-        {
-            for (int j = 0; j < width; j++)
+            else
             {
-            printf(" ");
+                for (int j = 0; j < width; j++)
+                {
+                    //printf(" ");
+                }
             }
         }
         printf("\n");

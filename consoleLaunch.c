@@ -1,21 +1,36 @@
 #include <stdio.h> //importing standard io
 
-void consoleRender (int x, int y)
+void consoleRender (int x, int y, int *art, int length)
 {
-    int width = 128;
-    int height = 32;
+    int size = sizeof(art)/sizeof(int);
+    printf("size = %d\n", size);
+    int width = 20;
+    int height = 10;
     int display[width][height];
     for (int i = 0; i < height; i++ )
     {
-        for (int j = 0; j < width; j++ )
+        if (i < length)
         {
-            if(y == i && x == j)
+            int compare = art[i];
+            for (int j = 0; j < width; j++)
             {
-                printf("X");
+                //printf(" <%d> ",compare);
+                if (compare & 0x1 == 1)
+                {
+                    printf("X");
+                }
+                else
+                {
+                    printf(" ");
+                }
+                compare = compare >> 1;
             }
-            else
+        }
+        else
+        {
+            for (int j = 0; j < width; j++)
             {
-                printf("-");
+            printf(" ");
             }
         }
         printf("\n");
@@ -34,19 +49,6 @@ int main (void)
 {
     printf("managed to launch game:\n");
 
-    /*int ret[][] =
-    {
-        {0,0,0,1,0,0,0},
-        {0,0,1,1,1,0,0},
-        {0,0,1,0,1,0,0},
-        {0,1,0,1,0,1,0},
-        {1,0,1,0,1,0,1},
-        {1,0,1,0,1,0,1},
-        {1,0,0,1,0,0,1}
-    };*/
-
-    consoleRender(0,1);
-
     //drawing:
     /*
     ---x---
@@ -56,7 +58,11 @@ int main (void)
     x-x-x-x
     x-x-x-x
     x--x--x
-*/
+    */
+
+    int ret[] = {112,8,54,75,54,8,112};
+
+    consoleRender(0,1,ret,sizeof(ret)/sizeof(int));
 
     //image file:
 }

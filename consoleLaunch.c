@@ -73,7 +73,7 @@ int main (void)
 
     consoleRender(0,1,ship_right,sizeof(ship_right)/sizeof(int));
 
-    //graphics:
+    // Graphics___________________________________________________
     int ship_v1[] = {       // visualization:
         1,1,1,0,0,0,0,      // [][][]_ _ _ _
         0,0,0,1,0,0,0,      // _ _ _ []_ _ _
@@ -85,7 +85,6 @@ int main (void)
     };
 
     // flattened these into less lines to reduce space
-
     int ship_v2[] = {
         1,1,1,1,1,0,0, 0,1,1,0,0,0,0, 1,1,0,1,1,1,0, 0,1,1,0,0,1,1,
         1,1,0,1,1,1,0, 0,1,1,0,0,0,0, 1,1,1,1,1,0,0 };
@@ -94,7 +93,7 @@ int main (void)
         0,1,1,1,1,0,0, 1,0,0,1,1,1,0, 1,0,1,0,0,1,1, 0,1,0,1,0,0,0,
         1,0,1,0,0,1,1, 1,0,0,1,1,1,0, 0,1,1,1,1,0,0 };
 
-    // use this draw function to pick which ship to convert from
+    // Use this draw-function to pick which ship to convert from
     // binary array into 16-byte segment array
     draw(ship_v1, 7);
     draw(ship_v2, 7);

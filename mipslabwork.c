@@ -18,6 +18,10 @@ int mytime = 0x5957;
 int timeoutcount = 0;
 int spaceX = 0;
 int spaceY = 0;
+int button2down = 0;
+int button2up = 0;
+int button3down = 0;
+int button3up = 0;
 int prime = 1234567;
 
 char textstring[] = "text, more text, and even more text!";
@@ -52,13 +56,41 @@ void labinit( void )
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
-  int pressed = getbtns();
-  if (pressed & 2) {
+  button2down = pressed(2);
+  button3down = pressed(4);
+  if (button2down && (button2up == 0)) {
     spaceY++;
+    button2up = 1;
   }
-  if (pressed & 4) {
+  if (button2up && (button2down == 0)) {
+    button2up = 0;
+  }
+  if (button3down && (button3up == 0)) {
     spaceY--;
+    button3up = 1;
   }
-  // display_debug(&spaceY);
+  if (button3up && (button3down == 0)) {
+    button3up = 0;
+  }
+  switch (spaceY & 0xf) {
+    case 0x0: display_string(0,"-");break;
+    case 0x1: display_string(0," -");break;
+    case 0x2: display_string(0,"  -");break;
+    case 0x3: display_string(0,"   -");break;
+    case 0x4: display_string(0,"    -");break;
+    case 0x5: display_string(0,"     -");break;
+    case 0x6: display_string(0,"      -");break;
+    case 0x7: display_string(0,"       -");break;
+    case 0x8: display_string(0,"        -");break;
+    case 0x9: display_string(0,"         -");break;
+    case 0xa: display_string(0,"          -");break;
+    case 0xb: display_string(0,"           -");break;
+    case 0xc: display_string(0,"            -");break;
+    case 0xd: display_string(0,"             -");break;
+    case 0xe: display_string(0,"              -");break;
+    case 0xf: display_string(0,"               -");break;
+  }
+
+  display_debug(&spaceY);
   display_update();
 }

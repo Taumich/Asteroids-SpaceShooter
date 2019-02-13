@@ -184,15 +184,7 @@ void display_update(void) {
 	}
 }
 
-void display_pixel(int x) {
-	DISPLAY_CHANGE_TO_COMMAND_MODE;
-	spi_send_recv(0x22);
-	spi_send_recv((x & 0x78) >> 3);
-
-	spi_send_recv(0x0);
-	spi_send_recv(0x10);
-
-	DISPLAY_CHANGE_TO_DATA_MODE;
+void display_pixel(int x, int y) {
 	
 }
 

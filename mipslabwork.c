@@ -16,6 +16,7 @@
 
 #define MAX_BULLETS 30
 #define BULLET_VELOCITY 2
+#define MAX_ASTEROIDS 30
 
 int mytime = 0x5957;
 int timeoutcount = 0;
@@ -75,6 +76,8 @@ void labwork( void ) {
   if (button3up && (button3down == 0)) {
     button3up = 0;
   }
+
+  /*
   switch (spaceY & 0xf) {
     case 0x0: display_string(0,"-");break;
     case 0x1: display_string(0," -");break;
@@ -93,7 +96,8 @@ void labwork( void ) {
     case 0xe: display_string(0,"              -");break;
     case 0xf: display_string(0,"               -");break;
   }
+  //*/
 
-  display_debug(&spaceY);
+  // display_debug(&spaceY);
   display_update();
 }

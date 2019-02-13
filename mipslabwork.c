@@ -14,6 +14,9 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
+#define MAX_BULLETS 30
+#define BULLET_VELOCITY 2
+
 int mytime = 0x5957;
 int timeoutcount = 0;
 int spaceX = 0;

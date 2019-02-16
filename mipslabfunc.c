@@ -185,7 +185,7 @@ void display_update(void) {
 }
 
 void display_pixel(int x, int y) {
-	
+
 }
 
 /* Helper function, local to this file.

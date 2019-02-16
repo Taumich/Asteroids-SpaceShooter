@@ -26,7 +26,7 @@ int button2down = 0;
 int button2up = 0;
 int button3down = 0;
 int button3up = 0;
-int prime = 1234567;
+int x = 0;
 
 char textstring[] = "text, more text, and even more text!";
 
@@ -47,15 +47,14 @@ void labinit( void )
   *ledvalue = *ledvalue & ~0xff;
   // Initialize TRISD 11:4 to 1
   TRISD |= 0xff0;
-  // Basic initialization of timer 2
-  T2CON = 0x70; // Stop timer and clear control register, set prescaler at 1:256
-  TMR2 = 0x0; // Clear timer register
-  PR2 = 0x7a12; // Load period register
-  IPC(2) = 0xd; // Set interrupt priority
-  IFSCLR(0) = 0x100;  // Clear interrupt flag;
-  IEC(0) = 0x100;  // Enable interrupts
-  T2CONSET = 0x8070; // Start timer
-  enable_interrupt();
+  // Initialize PORTB bits 10 and 8 to 1
+  TRISB |= 0x500;
+  // initialization of ADC
+  AD1PCFG = 0;  // All inputs are analog
+  AD1CON1 = 0x02e4; // ADC off, FORM: 16 bit fraction, auto-convert
+  AD1CON2 = 0;  // AVdd and AVss voltage, do not scan, interrupt every sample, 16 word buffer, always MUX A
+  AD1CON3 = 0x01ff; // Peripheral bus clock, 512 x prescaling
+  AD1CON1SET = 0x8000;  // Enable ADC
 }
 
 /* This function is called repetitively from the main program */
@@ -77,7 +76,7 @@ void labwork( void ) {
     button3up = 0;
   }
 
-  /*
+
   switch (spaceY & 0xf) {
     case 0x0: display_string(0,"-");break;
     case 0x1: display_string(0," -");break;
@@ -98,6 +97,10 @@ void labwork( void ) {
   }
   //*/
 
-  // display_debug(&spaceY);
+  AD1CON1SET = 0x2;
+  x = ADC1BUF0;
+  delay(100);
+  display_debug(&x);
+
   display_update();
 }

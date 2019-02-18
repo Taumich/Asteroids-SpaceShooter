@@ -1,3 +1,4 @@
+
 #include <stdio.h> //importing standard io
 
 // rendering-function for game testing in command line interface or terminal
@@ -65,15 +66,17 @@ void draw (int art[], int length, int x, int y)
     consoleRender(x,y,sprite,length);
 }
 
-
+// the main function of the console engine
 int main (void)
 {
     printf("managed to launch game:\n");
 
     int ship_up[] = {112,8,54,75,54,8,112};
     int ship_right[] = {7,8,54,105,54,8,7};
+    int heart[] = {2,5,10,5,2};
 
-    consoleRender(0,1,ship_right,sizeof(ship_right)/sizeof(int));
+    consoleRender(0,0,heart,5);
+    //consoleRender(0,1,ship_right,sizeof(ship_right)/sizeof(int));
 
     // Graphics___________________________________________________
     int ship_v1[] = {       // visualization:
@@ -85,6 +88,34 @@ int main (void)
         0,0,0,1,0,0,0,      // _ _ _ []_ _ _
         1,1,1,0,0,0,0       // [][][]_ _ _ _
     };
+
+    int s[] = {       // visualization:
+        0,1,0,1,0,      // [][][]_ _ _ _
+        1,0,1,0,1,      // _ _ _ []_ _ _
+        0,1,0,1,0,      // _ [][]_ [][]_
+        0,0,1,0,0,      // []_ _ []_ [][]
+        0,0,0,0,0
+    };
+
+    int ship[] = {       // visualization:
+        0,0,1,0,1,0,0,      // [][][]_ _ _ _
+        0,1,0,1,0,1,0,      // _ _ _ []_ _ _
+        1,0,0,0,0,0,1,      // _ [][]_ [][]_
+        0,1,0,0,0,1,0,      // []_ _ []_ [][]
+        0,0,1,0,1,0,0,      // _ [][]_ [][]_
+        0,0,0,1,0,0,0,      // _ _ _ []_ _ _
+        0,0,0,0,0,0,0       // [][][]_ _ _ _
+    };
+    /*
+    int ship_v1[] = {       // visualization:
+        0,0,0,0,0,0,0,      // [][][]_ _ _ _
+        0,0,0,0,0,0,0,      // _ _ _ []_ _ _
+        0,0,0,0,0,0,0,      // _ [][]_ [][]_
+        0,0,0,0,0,0,0,      // []_ _ []_ [][]
+        0,0,0,0,0,0,0,      // _ [][]_ [][]_
+        0,0,0,0,0,0,0,      // _ _ _ []_ _ _
+        0,0,0,0,0,0,0       // [][][]_ _ _ _
+    };*/
 
     // flattened these into less lines to reduce space
     int ship_v2[] = {
@@ -101,4 +132,5 @@ int main (void)
     draw(ship_v2, 7, 2,2);
     draw(ship_v3, 7, 3,3);
     draw(ship_v3, 7, 4,4);
-}
+    draw(s,5,5,3);
+}//*/

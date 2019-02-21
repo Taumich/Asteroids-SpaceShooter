@@ -36,7 +36,7 @@ void labinit( void ) {
   AD1CHS = 0x0a880000; // Select input pins to ADC
   AD1PCFG = 0xfeff;  // AN8 to analog input
   AD1CON1 = 0x0440; // FORM: 16 bit fraction, timer 3 control
-  AD1CON2 = 0x4000;  // External voltage, do not scan, interrupt every sample, 16 word buffer, always MUX A
+  AD1CON2 = 0x4000;  // Internal voltage +, external voltage -, do not scan, interrupt every sample, 16 word buffer, always MUX A
   AD1CON3 = 0x0101; // Peripheral bus clock, 4x prescaling
   AD1CON1SET = 0x8000;  // Enable ADC
   AD1CON1SET = 0x2; // Start sampling

@@ -9,9 +9,3 @@ int getsw(void) {
 int getbtns(void) {
   return (PORTD & 0xF0) >> 4;
 }
-
-int pressed(int button) {
-  int allbuttons = getbtns();
-  int down = allbuttons & button;
-  return down;
-}

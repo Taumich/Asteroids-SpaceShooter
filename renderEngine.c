@@ -18,6 +18,7 @@ void asteroidRender ()
 // rendering-function for game testing in command line interface or terminal
 void shipRender (int x, int y, int *art, int length)
 {
+
     int size = sizeof(art)/sizeof(int);
     printf("\n");
     for (int i = 0; i < HEIGHT; i++ )
@@ -26,11 +27,23 @@ void shipRender (int x, int y, int *art, int length)
         {
             if (x <= j && j < length + x)
             {
+                if(i == 0)
+                {
+                    printf("%d",display[j]);
+
+                    if (display[j] != 0)
+                    {
+                        printf("hit!");
+                    }
+                }
+
                 int compare = art[j-x];
                 compare = compare >> i-y;
                 if (y <= i && i < length +y && compare & 0x1 == 1)
                 {
-                    display[j] = (art[j-x]<<y);
+
+                    //rendering__
+                    display[j] += (1<<i);
                 }
             }
         }
@@ -120,7 +133,7 @@ int main (void)
                 x += moveX[j];
                 y += moveY[j];
                 printf("should draw now:");
-                fullRender(x,y,ship_v3,7);
+                fullRender(x,y,ship_v2,7);
                 printf("done drawing?:");
             }
         }

@@ -3,28 +3,30 @@
 // rendering-function for game testing in command line interface or terminal
 void consoleRender (int x, int y, int *art, int length)
 {
+
     int size = sizeof(art)/sizeof(int);
     printf("\n");
     int width = 20;
     int height = 10;
-    int display[width][height];
     for (int i = 0; i < height; i++ )
     {
         for (int j = 0; j < width; j++)
         {
-            if (j < length)
+            if (x <= j && j < length + x)
             {
-                int compare = art[j];
-                compare = compare >> i;
-                (i < length && compare & 0x1 == 1)? printf("[]") : printf("  ");
-            }
+                int compare = art[j-x];
+                compare = compare >> i-y;
+                (y <= i && i < length +y && compare & 0x1 == 1)? printf("[]") : printf("  ");
+                //(i < length && compare & 0x1 == 1)? printf("%d%d",i,j) : printf("  ");
+            } else if (x > j)
+                printf("  ");
         }
         printf("\n");
     }
 }
 
 // draw-function used to convert arrays with 1 and 0 into images with length x length dimensions.
-void draw (int art[], int length)
+void draw (int art[], int length, int x, int y)
 {
     int sprite[length];
 
@@ -60,7 +62,7 @@ void draw (int art[], int length)
         (j < length -1)? printf("%d,",sprite[j]) : printf("%d",sprite[j]);
     }
     printf("\n Rendering:\n");
-    consoleRender(0,1,sprite,length);
+    consoleRender(x,y,sprite,length);
 }
 
 
@@ -95,7 +97,8 @@ int main (void)
 
     // Use this draw-function to pick which ship to convert from
     // binary array into 16-byte segment array
-    draw(ship_v1, 7);
-    draw(ship_v2, 7);
-    draw(ship_v3, 7);
+    draw(ship_v1, 7, 1,1);
+    draw(ship_v2, 7, 2,2);
+    draw(ship_v3, 7, 3,3);
+    draw(ship_v3, 7, 4,4);
 }

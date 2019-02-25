@@ -5,15 +5,19 @@
 #define HEIGHT 32
 #define WIDTH 128
 
+
+unsigned int display[128];
+
+void asteroidRender ()
+{
+    display[30] = 28;
+    display[31] = 20;
+    display[32] = 28;
+}
+
 // rendering-function for game testing in command line interface or terminal
 void shipRender (int x, int y, int *art, int length)
 {
-    unsigned int display[128];
-    for (int i=0; i < 128; i++)
-    {
-        display[i] = 0;
-    }
-
     int size = sizeof(art)/sizeof(int);
     printf("\n");
     for (int i = 0; i < HEIGHT; i++ )
@@ -27,16 +31,21 @@ void shipRender (int x, int y, int *art, int length)
                 if (y <= i && i < length +y && compare & 0x1 == 1)
                 {
                     display[j] = (art[j-x]<<y);
-                    //printf ("%d ",display[j]);
                 }
-                //
-                    //printf("  ");
-                //(i < length && compare & 0x1 == 1)? printf("%d%d",i,j) : printf("  ");
-            } //else if (x > j)
-                //printf("  ");
+            }
         }
     }
     consoleRender (display);
+}
+
+void fullRender (int x, int y, int *ship, int length)
+{
+    for (int i=0; i < 128; i++)
+    {
+        display[i] = 0;
+    }
+    asteroidRender();
+    shipRender(x,y,ship,length);
 }
 
 // draw-function used to convert arrays with 1 and 0 into images with length x length dimensions.
@@ -111,7 +120,7 @@ int main (void)
                 x += moveX[j];
                 y += moveY[j];
                 printf("should draw now:");
-                shipRender(x,y,ship_v3,7);
+                fullRender(x,y,ship_v3,7);
                 printf("done drawing?:");
             }
         }

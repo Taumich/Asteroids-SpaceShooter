@@ -202,11 +202,40 @@ void display_update_frame(uint8_t* framebuffer) {
 	}
 }
 
-void display_insert_data(uint8_t* framebuffer, int x, int y) {
+void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sprite_size) {
+	// Conditions for rendering inside the frame
+	if (sprite_size * -1 > x || x > 127) {
+		return;
+	}
+	if (-8 > y || y > 31) {
+		return;
+	}
+	// Position on the current page byte segment
 	int ypos = y % 8;
+	// Page of the display
 	int ypag = y / 8;
+	// Variable to hold the root byte segment of the display
+	uint8_t* root = framebuffer;
+	// Chooses start position
 	framebuffer += x + 128 * ypag;
-	*framebuffer = 1 << ypos;
+	// Creates an offset variable that is overridden when the sprite is
+	// out of bounds on the left side of the display
+	int offset = 0;
+	if (framebuffer < root) {
+		offset = (root - framebuffer) >> 3;
+	}
+	// Inserts the selected sprite in the framebuffer
+	// If there is an offset, it will select only the visible parts of the sprite
+	int i;
+	for (i = 0; i < sprite_size - offset; i++) {
+		*framebuffer |= *(sprite + offset);
+		framebuffer++;
+		// Condition to break out if the rest of the sprite is out of bounds
+		if (framebuffer > root + 127) {
+			return;
+		}
+		sprite++;
+	}
 }
 
 void display_clear(uint8_t* framebuffer) {

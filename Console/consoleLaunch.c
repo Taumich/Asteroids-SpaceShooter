@@ -1,4 +1,4 @@
-#include <stdio.h> //importing standard io
+/*#include <stdio.h> //importing standard io
 
 // rendering-function for game testing in command line interface or terminal
 void consoleRender (int x, int y, int *art, int length)
@@ -102,3 +102,4 @@ int main (void)
     draw(ship_v3, 7, 3,3);
     draw(ship_v3, 7, 4,4);
 }
+*/

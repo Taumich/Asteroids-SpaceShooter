@@ -1,6 +1,5 @@
 
 #include <stdio.h> //importing standard io
-#include "consoleLaunch.c"
 
 #define HEIGHT 32
 #define WIDTH 128

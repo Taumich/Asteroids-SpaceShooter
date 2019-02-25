@@ -184,8 +184,36 @@ void display_update(void) {
 	}
 }
 
-void display_pixel(int x, int y) {
+void display_update_frame(uint8_t* framebuffer) {
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		DISPLAY_CHANGE_TO_COMMAND_MODE;
+		spi_send_recv(0x22);
+		spi_send_recv(i);
 
+		spi_send_recv(0x0);
+		spi_send_recv(0x10);
+
+		DISPLAY_CHANGE_TO_DATA_MODE;
+		for (j = 0; j < 128; j++) {
+			spi_send_recv(*framebuffer);
+			framebuffer++;
+		}
+	}
+}
+
+void display_insert_data(uint8_t* framebuffer, int x, int y) {
+	int ypos = y % 8;
+	int ypag = y / 8;
+	framebuffer += x + 128 * ypag;
+	*framebuffer = 1 << ypos;
+}
+
+void display_clear(uint8_t* framebuffer) {
+	int i;
+	for (i = 0; i < 512; i++) {
+		*framebuffer++ = 0;
+	}
 }
 
 /* Helper function, local to this file.

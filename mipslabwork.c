@@ -6,18 +6,31 @@
 #define BULLET_VELOCITY 2
 #define MAX_ASTEROIDS 30
 
+uint8_t displaybuffer[512];
+
+int xpos = 0;
+int ypos = 0;
 int stickX = 0;
 int stickY = 0;
 int button = 0;
 
 /* Interrupt Service Routine */
 void user_isr( void ) {
+  display_clear(&displaybuffer);
   stickX = ADC1BUF0;
   stickY = ADC1BUF1;
   button = !((PORTF & 8) >> 3);
   AD1CON1SET = 0x2; // Start sampling
-  display_debug(&stickX);
-  display_update();
+  ypos++;
+  if (ypos > 31) {
+    ypos = 0;
+    xpos++;
+    if (xpos > 127) {
+      xpos = 0;
+    }
+  }
+  display_insert_data(&displaybuffer, xpos, ypos);
+  display_update_frame(&displaybuffer);
   IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 

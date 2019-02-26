@@ -11,8 +11,8 @@ int ship_up[7] = {112,8,54,75,54,8,112};
 int ship_right[7] = {73,85,85,42,20,28,8};
 int pixel[1] = {1};
 
-int xpos = 0;
-int ypos = 0;
+int xpos = 20;
+int ypos = 4;
 int stickX = 0;
 int stickY = 0;
 int button = 0;
@@ -24,15 +24,15 @@ void user_isr( void ) {
   stickY = ADC1BUF1;
   button = !((PORTF & 8) >> 3);
   AD1CON1SET = 0x2; // Start sampling
-  // xpos--;
-  // if (xpos < -10) {
-  //   xpos = 0;
-    // ypos++;
-    // if (ypos > 31) {
-    //   ypos = 0;
-    // }
-  // }
-  display_insert_data(&displaybuffer, xpos, ypos, &ship_right, 7);
+  xpos++;
+  if (xpos > 20) {
+     xpos = 0;
+     ypos++;
+     if (ypos > 31) {
+       ypos = 4;
+     }
+   }
+  display_insert_data(&displaybuffer, xpos, ypos, &ship_up, 7);
   display_update_frame(&displaybuffer);
   IFSCLR(1) = 0x2;  // Clear interrupt flag
 }

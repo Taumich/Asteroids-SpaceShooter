@@ -11,11 +11,12 @@ int ship_up[7] = {112,8,54,75,54,8,112};
 int ship_right[7] = {73,85,85,42,20,28,8};
 int pixel[1] = {1};
 
-int xpos = 20;
-int ypos = 4;
+int xpos = 0;
+int ypos = 0;
 int stickX = 0;
 int stickY = 0;
 int button = 0;
+int rep = 0;
 
 /* Interrupt Service Routine */
 void user_isr( void ) {
@@ -25,11 +26,14 @@ void user_isr( void ) {
   button = !((PORTF & 8) >> 3);
   AD1CON1SET = 0x2; // Start sampling
   xpos++;
-  if (xpos > 20) {
-     xpos = 0;
+  rep++;
+  if (rep=2)
+  {
+      rep = 0;
      ypos++;
      if (ypos > 31) {
-       ypos = 4;
+       ypos = 0;
+       xpos = 0;
      }
    }
   display_insert_data(&displaybuffer, xpos, ypos, &ship_up, 7);

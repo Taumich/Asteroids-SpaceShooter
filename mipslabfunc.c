@@ -220,21 +220,19 @@ void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sp
 	framebuffer += x + 128 * ypag;
 	// Creates an offset variable that is overridden when the sprite is
 	// out of bounds on the left side of the display (x-axis)
+
 	int offset = 0;
 	if (framebuffer < root) {
 		offset = (root - framebuffer) >> 3;
 	}
-	// Inserts the selected sprite in the framebuffer
-	// If there is an offset, it will select only the visible parts of the sprite
+
+	// framebuffer is now functional for x and y axis, i am not completely
+	// sure how this code works but after intensive testing, this solved it:
 	int i;	//used for width of the ship
 	for (i = 0; i < sprite_size - offset; i++) {
-		//*framebuffer |= *(sprite + offset);
-		*framebuffer |= sprite[offset];
-		framebuffer++;	// moves to next framebuffer adress
-		// Condition to break out if the rest of the sprite is out of bounds
-		if (framebuffer > root + 127) {
-			return;
-		}
+		*framebuffer |= sprite[offset] << (y % 8);
+		*(framebuffer+128) |= sprite[offset] >> 8-(y % 8);
+		framebuffer++;
 		sprite++;
 	}
 }

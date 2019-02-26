@@ -204,12 +204,12 @@ void display_update_frame(uint8_t* framebuffer) {
 
 void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sprite_size) {
 	// Conditions for rendering inside the frame
-	if (sprite_size * -1 > x || x > 127) {
-		return;
+	/*if (sprite_size * -1 > x || x > 127) {
+		return;	// if out of bounds on x-axis, exit code from here
 	}
 	if (-8 > y || y > 31) {
-		return;
-	}
+		return; // if out of bounds on y-axis, exit code from here
+	}*/
 	// Position on the current page byte segment
 	int ypos = y % 8;
 	// Page of the display
@@ -219,17 +219,18 @@ void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sp
 	// Chooses start position
 	framebuffer += x + 128 * ypag;
 	// Creates an offset variable that is overridden when the sprite is
-	// out of bounds on the left side of the display
+	// out of bounds on the left side of the display (x-axis)
 	int offset = 0;
 	if (framebuffer < root) {
 		offset = (root - framebuffer) >> 3;
 	}
 	// Inserts the selected sprite in the framebuffer
 	// If there is an offset, it will select only the visible parts of the sprite
-	int i;
+	int i;	//used for width of the ship
 	for (i = 0; i < sprite_size - offset; i++) {
-		*framebuffer |= *(sprite + offset);
-		framebuffer++;
+		//*framebuffer |= *(sprite + offset);
+		*framebuffer |= sprite[offset];
+		framebuffer++;	// moves to next framebuffer adress
 		// Condition to break out if the rest of the sprite is out of bounds
 		if (framebuffer > root + 127) {
 			return;

@@ -204,12 +204,12 @@ void display_update_frame(uint8_t* framebuffer) {
 
 void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sprite_size) {
 	// Conditions for rendering inside the frame
-	/*if (sprite_size * -1 > x || x > 127) {
+	if (sprite_size * -1 > x || x > 127) {
 		return;	// if out of bounds on x-axis, exit code from here
 	}
 	if (-8 > y || y > 31) {
 		return; // if out of bounds on y-axis, exit code from here
-	}*/
+	}
 	// Position on the current page byte segment
 	int ypos = y % 8;
 	// Page of the display
@@ -381,4 +381,67 @@ char * itoaconv( int num )
   /* Since the loop always sets the index i to the next empty position,
    * we must add 1 in order to return a pointer to the first occupied position. */
   return( &itoa_buffer[ i + 1 ] );
+}
+
+//Extra commands for tasks such as spawning and collission calculation
+
+//Asteroid Spawn:
+void reset_asteroid_array(int* location)
+{
+	int i;
+	for (i=0; i<20; i+=2)
+	{
+		location[i] = -1;
+	}
+}
+
+void spawn_asteroid (int *location, int quantity)
+{
+	int i;
+	for (i=0; i<20; i+=2)
+	{
+		if (location[i] == -1)
+		{
+			location[i] = 121;
+			//randomized y-location:
+			location[i+1] = location[0] % 16 + location[2] % 13 + 4 + location[4] % 4 ;
+			return;
+		}
+	}
+}
+
+void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite)
+{
+	int i;
+	for (i=0; i<20; i+=2)
+    {
+		if (location[i] > -1) //checking only x-values for active state (not -1)
+		{
+			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
+			location[i]-=3;
+		}
+		else if (location[i] != -1)
+		{
+			location[i] = -1;
+		}
+    }
+}
+
+// Collission calculation functions:
+
+int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
+{
+	int i;
+	for(i=x; i < x+7; i++) //i will check framebuffer locations where ship will render. Columns.
+	{
+		int j;
+		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
+		{
+			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
 }

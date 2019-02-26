@@ -9,6 +9,7 @@
 uint8_t displaybuffer[512];
 int ship_up[7] = {112,8,54,75,54,8,112};
 int ship_right[7] = {73,85,85,42,20,28,8};
+int asteroid[7] = {126,255,255,255,255,255,126};
 int pixel[1] = {1};
 
 int xpos = 0;
@@ -17,28 +18,46 @@ int stickX = 0;
 int stickY = 0;
 int button = 0;
 int rep = 0;
+int asteroidPositions[20];
+int asteroidCount = 0;
 
 /* Interrupt Service Routine */
-void user_isr( void ) {
-  display_clear(&displaybuffer);
-  stickX = ADC1BUF0;
-  stickY = ADC1BUF1;
-  button = !((PORTF & 8) >> 3);
-  AD1CON1SET = 0x2; // Start sampling
-  xpos++;
-  rep++;
-  if (rep=2)
-  {
-      rep = 0;
-     ypos++;
-     if (ypos > 31) {
-       ypos = 0;
-       xpos = 0;
-     }
-   }
-  display_insert_data(&displaybuffer, xpos, ypos, &ship_up, 7);
-  display_update_frame(&displaybuffer);
-  IFSCLR(1) = 0x2;  // Clear interrupt flag
+void user_isr( void )
+{
+    display_clear(&displaybuffer);
+    stickX = ADC1BUF0;
+    stickY = ADC1BUF1;
+    button = !((PORTF & 8) >> 3);
+    AD1CON1SET = 0x2; // Start sampling
+    xpos++;
+    rep++;
+
+    if (rep=2)
+    {
+       rep = 0;
+       ypos++;
+       if (ypos > 16)
+       {
+           spawn_asteroid(asteroidPositions, &asteroidCount);
+           ypos = 0;
+           xpos = 0;
+      }
+    }
+
+    //command for spawning a new asteroid
+    //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
+    //loop for displaying all active asteroids
+    display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
+
+    if (collission_check(displaybuffer, xpos, ypos, ship_right) == 1)
+    {
+        xpos = 30;
+        ypos = 0;
+    }
+
+    display_insert_data(&displaybuffer, xpos, ypos, ship_right, 7);
+    display_update_frame(&displaybuffer);
+    IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 
 
@@ -68,6 +87,9 @@ void labinit( void ) {
   IECSET(1) = 0x2;  // Enable ADC interrupts
   // Enable global interrupts
   enable_interrupt();
+
+  reset_asteroid_array(asteroidPositions);
+  spawn_asteroid(asteroidPositions, &asteroidCount);
 }
 
 /* This function is called repetitively from the main program */

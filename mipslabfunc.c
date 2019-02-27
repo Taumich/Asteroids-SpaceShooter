@@ -253,6 +253,15 @@ static void num32asc( char * s, int n )
     *s++ = "0123456789ABCDEF"[ (n >> i) & 15 ];
 }
 
+//random number generator function
+int previous;
+int seed[] = {8,3,5,2,9,6,4,1,7,0};
+int randomNumberGenerator (int param)
+{
+	previous = seed[seed[(previous + param) % 10]];
+	return previous;
+}
+
 //Extra commands for tasks such as spawning and collission calculation
 
 //Asteroid Spawn:
@@ -281,9 +290,10 @@ void spawn_asteroid (int *location, int quantity, int max)
 	{
 		if (location[i] < 0)
 		{
-			location[i] = 121;
+			location[i] = 128;
 			//randomized y-location:
-			int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
+			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
+			int newLoc = 2*randomNumberGenerator(location[0]) + randomNumberGenerator(location[0])/2;
 			location[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
 			//location[i+1] = 5;
 			return;
@@ -322,7 +332,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int
   	}
 }
 
-void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, int* sprite, int maxbul, int maxast)
+void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, int* asthp, int* sprite, int maxbul, int maxast)
 {
 	int i;
 	for (i=0; i<maxbul; i+=2)

@@ -2,10 +2,10 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-#define MAX_BULLETS 10
+#define MAX_BULLETS 20
 #define BULLET_VELOCITY 2
 #define MAX_ASTEROIDS 15
-#define SPAWN_FREQUENCY 15
+#define SPAWN_FREQUENCY 10
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -14,12 +14,18 @@ int ship_v2[] = {85,127,107,85,85,28,8};
 int ship_v3[] = {54,73,85,107,99,54,20};
 int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
-int asteroid[7] = {126,255,255,255,255,255,126};
+int asteroid_1[] = {126,255,255,255,255,255,126};
+int asteroid_2[] = {126,255,207,195,207,255,126};
+int asteroid_3[] = {126,207,195,129,195,207,126};
+int asteroid_4[] = {126,129,129,129,129,129,126};
+int asteroid[4] = {asteroid_1, asteroid_2, asteroid_3, asteroid_4};
 
 int bullet_level1[] = {2,2,0};
 int bullet_level2[] = {2,7,2};
-int bullet[2] = {bullet_level1, bullet_level2};
-int pixel[1] = {1};
+int bullet_level3[] = {7,7,2};
+int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
+
+//int pixel[1] = {1};
 
 int xpos = 10;
 int ypos = 10;
@@ -31,7 +37,9 @@ int rep = 0;
 int bulletPositions[MAX_BULLETS*2];
 int bulletCount = 0;
 int asteroidPositions[MAX_ASTEROIDS*2];
+int asteroidHealth[MAX_ASTEROIDS];
 int asteroidCount = 0;
+int playerEnergy = 8; //health and energy is the same (shields)
 
 /* Interrupt Service Routine */
 void user_isr( void )
@@ -42,9 +50,14 @@ void user_isr( void )
   button = !((PORTF & 8) >> 3);
   button3 = (PORTD & 0x40) >> 6;
   AD1CON1SET = 0x2; // Start sampling
+
+  //checking inputs and timers for spawning of new entities
   rep++;
     if (rep / SPAWN_FREQUENCY) {
-        spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
+        if(randomNumberGenerator(xpos + ypos + bulletPositions[0] + asteroidPositions[0]) >=)
+        {
+            spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
+        }
         rep = 0;
     }
     if (rep % 2) {
@@ -60,37 +73,28 @@ void user_isr( void )
       if (stickY == 0x3ff) {
         ypos++;
       }
-
-      if (button3) {
-        spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
-      }
     }
 
-    display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
+    if ( rep % 4 )
+    {
+        spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
+    }
 
+//rendering all active asteroids
+    display_all_asteroids(displaybuffer, asteroidPositions, asteroid[0], MAX_ASTEROIDS*2);
+
+//checking for asteroid collission with ship
     if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
     {
       xpos = 0;
       ypos = 13;
     }
-  /*
-  //command for spawning a new asteroid
-  //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
-  //loop for displaying all active asteroids
-  display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
 
+//spawning all active bullets
+    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, asteroidHealth, bullet[0], MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
-  // bullet here
-  //bullet
-  //display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
-
-  //bullet
-  //display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
-*/
-    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
-
-    display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
-    display_update_frame(&displaybuffer);
+    display_insert_data(displaybuffer, xpos, ypos, active_ship[0], 7);
+    display_update_frame(displaybuffer);
     IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 

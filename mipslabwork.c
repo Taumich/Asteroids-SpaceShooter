@@ -11,7 +11,7 @@ int ship_up[7] = {112,8,54,75,54,8,112};
 int ship_right[7] = {73,85,85,42,20,28,8};
 int pixel[1] = {1};
 
-int xpos = 0;
+int xpos = -7;
 int ypos = 0;
 int stickX = 0;
 int stickY = 0;
@@ -24,14 +24,14 @@ void user_isr( void ) {
   stickY = ADC1BUF1;
   button = !((PORTF & 8) >> 3);
   AD1CON1SET = 0x2; // Start sampling
-  // xpos--;
-  // if (xpos < -10) {
-  //   xpos = 0;
+  xpos++;
+  if (xpos > 127) {
+    xpos = -7;
     // ypos++;
     // if (ypos > 31) {
     //   ypos = 0;
     // }
-  // }
+  }
   display_insert_data(&displaybuffer, xpos, ypos, &ship_right, 7);
   display_update_frame(&displaybuffer);
   IFSCLR(1) = 0x2;  // Clear interrupt flag
@@ -45,7 +45,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0xffff; // Set timer period
+  PR3 = 0x0fff; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;

@@ -2,10 +2,10 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-#define MAX_BULLETS 100
+#define MAX_BULLETS 10
 #define BULLET_VELOCITY 2
-#define MAX_ASTEROIDS 13
-#define SPAWN_FREQUENCY 10
+#define MAX_ASTEROIDS 5
+#define SPAWN_FREQUENCY 15
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -28,9 +28,9 @@ int stickY = 0;
 int button = 0;
 int button3 = 0;
 int rep = 0;
-int bulletPositions[MAX_BULLETS];
+int bulletPositions[MAX_BULLETS*2];
 int bulletCount = 0;
-int asteroidPositions[MAX_ASTEROIDS];
+int asteroidPositions[MAX_ASTEROIDS*2];
 int asteroidCount = 0;
 
 /* Interrupt Service Routine */
@@ -60,13 +60,13 @@ void user_isr( void )
       if (stickY == 0x3ff) {
         ypos++;
       }
+
+      if (button3) {
+        spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
+      }
     }
 
     display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
-
-    if (button3) {
-      //spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
-    }
 
     if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
     {
@@ -121,8 +121,8 @@ void labinit( void ) {
   IECSET(1) = 0x2;  // Enable ADC interrupts
   // END Initialize ADC
   // Initialize asteroids and bullets
-  reset_asteroid_array(asteroidPositions);
-  reset_bullet_array(bulletPositions);
+  reset_asteroid_array(asteroidPositions, MAX_ASTEROIDS*2);
+  reset_bullet_array(bulletPositions, MAX_BULLETS*2);
   // Enable global interrupts
   enable_interrupt();
 }

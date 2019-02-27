@@ -256,19 +256,19 @@ static void num32asc( char * s, int n )
 //Extra commands for tasks such as spawning and collission calculation
 
 //Asteroid Spawn:
-void reset_asteroid_array(int* location)
+void reset_asteroid_array(int* location, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i=0; i<max; i+=2)
 	{
 		location[i] = -1;
 	}
 }
 
-void reset_bullet_array(int* location)
+void reset_bullet_array(int* location, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i=0; i<max; i+=2)
 	{
 		location[i] = 128;
 	}
@@ -279,12 +279,13 @@ void spawn_asteroid (int *location, int quantity, int max)
 	int i;
 	for (i=0; i<max; i+=2)
 	{
-		if (location[i] == -1)
+		if (location[i] < 0)
 		{
 			location[i] = 121;
 			//randomized y-location:
-			//location[i+1] = location[0] % 16 + location[2] % 13 + 4 + location[4] % 4;
-			location[i+1] = 5;
+			int newLoc = (location[0] % 12) + location[2] % 11 + 4 + location[4] % 4;
+			location[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
+			//location[i+1] = 5;
 			return;
 		}
 	}
@@ -308,7 +309,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int
 {
 	int i;
 	for (i=0; i<max; i+=2)
-  {
+  	{
 		if (location[i] > -1) //checking only x-values for active state (not -1)
 		{
 			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
@@ -318,7 +319,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int
 		{
 			location[i] = -1;
 		}
-  }
+  	}
 }
 
 void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, int* sprite, int maxbul, int maxast)
@@ -329,7 +330,7 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 		if (location[i] < 127) //checking only x-values for active state (not 127)
 		{
 			// check which asteroid collides with bullet
-			/* j;
+			int j;
 			for (j=0; j<maxast; j+=2)
 			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
 				if(	asteroids[j] != -1 &&
@@ -341,8 +342,8 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 				}
 			}
 			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
-			location[i]++;
-			*/
+			location[i]+=4;
+
 		}
 		else if (location[i] != 128)
 		{

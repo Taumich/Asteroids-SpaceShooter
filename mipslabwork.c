@@ -4,7 +4,7 @@
 
 #define MAX_BULLETS 10
 #define BULLET_VELOCITY 2
-#define MAX_ASTEROIDS 5
+#define MAX_ASTEROIDS 15
 #define SPAWN_FREQUENCY 15
 
 uint8_t displaybuffer[512];

@@ -2,10 +2,9 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-#define MAX_BULLETS 100
+#define MAX_BULLETS 80
 #define BULLET_VELOCITY 2
-#define MAX_ASTEROIDS 13
-#define SPAWN_FREQUENCY 10
+#define MAX_ASTEROIDS 10
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -16,8 +15,8 @@ int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
 int asteroid[7] = {126,255,255,255,255,255,126};
 
-int bullet_level1[] = {2,2,0};
-int bullet_level2[] = {2,7,2};
+int bullet_level1[3] = {2,2,0};
+int bullet_level2[3] = {2,7,2};
 int bullet[2] = {bullet_level1, bullet_level2};
 int pixel[1] = {1};
 
@@ -26,7 +25,6 @@ int ypos = 0;
 int stickX = 0;
 int stickY = 0;
 int button = 0;
-int button3 = 0;
 int rep = 0;
 int bulletPositions[MAX_BULLETS*2];
 int bulletCount = 0;
@@ -40,43 +38,36 @@ void user_isr( void )
   stickX = ADC1BUF0;
   stickY = ADC1BUF1;
   button = !((PORTF & 8) >> 3);
-  button3 = (PORTD & 0x40) >> 6;
   AD1CON1SET = 0x2; // Start sampling
+  xpos++;
   rep++;
-  if (rep / SPAWN_FREQUENCY) {
-    spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
-    rep = 0;
-  }
-  if (button3) {
-    spawn_bullet (xpos, ypos, bulletPositions, MAX_BULLETS*2);
-  }
-  if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
+
+  if (rep=3)
   {
-    xpos = 0;
-    ypos = 13;
+    rep = 0;
+    ypos++;
+    spawn_bullet (xpos, ypos, bulletPositions, MAX_BULLETS*2);
+    if (ypos > 16)
+    {
+      spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
+      ypos = 0;
+      xpos = 0;
+    }
   }
+
   //command for spawning a new asteroid
   //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
   //loop for displaying all active asteroids
   display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
-  if (rep % 2) {
-    if (stickX == 0) {
-      xpos++;
-    }
-    if (stickX == 0x3ff) {
-      xpos--;
-    }
-    if (stickY == 0) {
-      ypos--;
-    }
-    if (stickY == 0x3ff) {
-      ypos++;
-    }
-  }
 
+  if (collission_check(displaybuffer, xpos, ypos, active_ship[1]) == 1)
+  {
+    xpos = 30;
+    ypos = 0;
+  }
   // bullet here
   //bullet
-  display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+  display_all_bullets(displaybuffer, bulletPositions, bullet_level1, MAX_BULLETS*2);
 
   /*display_insert_data(&displaybuffer, bulletPositions[0]++, bulletPositions[1], bullet_level1, 3);
   display_insert_data(&displaybuffer, bulletPositions[2]++, bulletPositions[3], bullet_level1, 3);
@@ -96,7 +87,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0x0fff; // Set timer period
+  PR3 = 0xffff; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;

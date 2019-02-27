@@ -414,7 +414,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite)
 {
 	int i;
 	for (i=0; i<20; i+=2)
-    {
+  {
 		if (location[i] > -1) //checking only x-values for active state (not -1)
 		{
 			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
@@ -424,7 +424,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite)
 		{
 			location[i] = -1;
 		}
-    }
+  }
 }
 
 // Collission calculation functions:

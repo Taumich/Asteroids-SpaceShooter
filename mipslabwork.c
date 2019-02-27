@@ -64,11 +64,7 @@ void user_isr( void )
   // bullet here
 
   //bullet
-<<<<<<< HEAD
   display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
-=======
-  display_insert_data(&displaybuffer, xpos+9, ypos+2, shot_level1, 3);
->>>>>>> 4b5ed74884d6985d2014fcd5999d5651e31f22aa
 
   display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
   display_update_frame(&displaybuffer);

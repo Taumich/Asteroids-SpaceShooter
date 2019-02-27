@@ -21,8 +21,8 @@ int bullet_level2[] = {2,7,2};
 int bullet[2] = {bullet_level1, bullet_level2};
 int pixel[1] = {1};
 
-int xpos = 0;
-int ypos = 0;
+int xpos = 10;
+int ypos = 10;
 int stickX = 0;
 int stickY = 0;
 int button = 0;
@@ -43,47 +43,55 @@ void user_isr( void )
   button3 = (PORTD & 0x40) >> 6;
   AD1CON1SET = 0x2; // Start sampling
   rep++;
-  if (rep / SPAWN_FREQUENCY) {
-    spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
-    rep = 0;
-  }
-  if (button3) {
-    spawn_bullet (xpos, ypos, bulletPositions, MAX_BULLETS*2);
-  }
-  if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
-  {
-    xpos = 0;
-    ypos = 13;
-  }
+    if (rep / SPAWN_FREQUENCY) {
+        spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
+        rep = 0;
+    }
+    if (rep % 2) {
+      if (stickX == 0) {
+        xpos++;
+      }
+      if (stickX == 0x3ff) {
+        xpos--;
+      }
+      if (stickY == 0) {
+        ypos--;
+      }
+      if (stickY == 0x3ff) {
+        ypos++;
+      }
+    }
+
+    display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
+
+    if (button3) {
+      spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
+    }
+
+    if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
+    {
+      xpos = 0;
+      ypos = 13;
+    }
+  /*
   //command for spawning a new asteroid
   //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
   //loop for displaying all active asteroids
   display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
-  if (rep % 2) {
-    if (stickX == 0) {
-      xpos++;
-    }
-    if (stickX == 0x3ff) {
-      xpos--;
-    }
-    if (stickY == 0) {
-      ypos--;
-    }
-    if (stickY == 0x3ff) {
-      ypos++;
-    }
-  }
+
 
   // bullet here
   //bullet
-  display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+  //display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
   //bullet
-  display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
+  //display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
+*/
+    //display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
-  display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
-  display_update_frame(&displaybuffer);
-  IFSCLR(1) = 0x2;  // Clear interrupt flag
+    display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
+    display_update_frame(&displaybuffer);
+    IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 
 

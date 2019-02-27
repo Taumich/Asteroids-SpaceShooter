@@ -398,16 +398,16 @@ void reset_asteroid_array(int* location)
 void reset_bullet_array(int* location)
 {
 	int i;
-	for (i=0; i<200; i+=2)
+	for (i=0; i<20; i+=2)
 	{
 		location[i] = 128;
 	}
 }
 
-void spawn_asteroid (int *location, int quantity)
+void spawn_asteroid (int *location, int quantity, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i=0; i<max; i+=2)
 	{
 		if (location[i] == -1)
 		{
@@ -419,13 +419,15 @@ void spawn_asteroid (int *location, int quantity)
 	}
 }
 
-void spawn_bullet(int x, int y, int* location, int max)
+void spawn_bullet (int x, int y, int* location, int max)
 {
 	int i;
-	for (i = 0; i < max; i += 2) {
-		if (location[i] > 127) {
-			location[i] = x+7;
-			location[i+1] = y+2;
+	for (i=0; i<max; i+=2)
+	{
+		if (location[i] > 127)
+		{
+			location[i] = x;
+			location[i+1] = y;
 			return;
 		}
 	}
@@ -452,11 +454,11 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 {
 	int i;
 	for (i=0; i<maxbul; i+=2)
-  {
+ 	{
 		if (location[i] < 127) //checking only x-values for active state (not 127)
 		{
 			// check which asteroid collides with bullet
-			int j;
+			/* j;
 			for (j=0; j<maxast; j+=2)
 			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
 				if(	asteroids[j] != -1 &&
@@ -466,9 +468,9 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 					location[i] = 128;
 					asteroids[j] = -1;
 				}
-			}
+			}*/
 			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
-			location[i]+=4;
+			location[i]++;
 		}
 		else if (location[i] != 128)
 		{
@@ -486,7 +488,8 @@ int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
 		int j;
 		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
 		{
-			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
+			//if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
+			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
 			{
 				return 1;
 			}

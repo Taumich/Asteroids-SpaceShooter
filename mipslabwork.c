@@ -24,40 +24,40 @@ int asteroidCount = 0;
 /* Interrupt Service Routine */
 void user_isr( void )
 {
-    display_clear(&displaybuffer);
-    stickX = ADC1BUF0;
-    stickY = ADC1BUF1;
-    button = !((PORTF & 8) >> 3);
-    AD1CON1SET = 0x2; // Start sampling
-    xpos++;
-    rep++;
+  display_clear(&displaybuffer);
+  stickX = ADC1BUF0;
+  stickY = ADC1BUF1;
+  button = !((PORTF & 8) >> 3);
+  AD1CON1SET = 0x2; // Start sampling
+  xpos++;
+  rep++;
 
-    if (rep=2)
+  if (rep=2)
+  {
+    rep = 0;
+    ypos++;
+    if (ypos > 16)
     {
-       rep = 0;
-       ypos++;
-       if (ypos > 16)
-       {
-           spawn_asteroid(asteroidPositions, &asteroidCount);
-           ypos = 0;
-           xpos = 0;
-      }
+      spawn_asteroid(asteroidPositions, &asteroidCount);
+      ypos = 0;
+      xpos = 0;
     }
+  }
 
-    //command for spawning a new asteroid
-    //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
-    //loop for displaying all active asteroids
-    display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
+  //command for spawning a new asteroid
+  //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
+  //loop for displaying all active asteroids
+  display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
 
-    if (collission_check(displaybuffer, xpos, ypos, ship_right) == 1)
-    {
-        xpos = 30;
-        ypos = 0;
-    }
+  if (collission_check(displaybuffer, xpos, ypos, ship_right) == 1)
+  {
+    xpos = 30;
+    ypos = 0;
+  }
 
-    display_insert_data(&displaybuffer, xpos, ypos, ship_right, 7);
-    display_update_frame(&displaybuffer);
-    IFSCLR(1) = 0x2;  // Clear interrupt flag
+  display_insert_data(&displaybuffer, xpos, ypos, ship_right, 7);
+  display_update_frame(&displaybuffer);
+  IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 
 
@@ -72,7 +72,7 @@ void labinit( void ) {
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;
-  // Initialize ADC
+  // BEGIN Initialize ADC
   AD1CON1CLR = 0x8000;  // ADC off
   AD1CHS = 0x0a080000; // Select input pins to ADC
   AD1PCFG = 0xfaff;  // AN8 and AN10 to analog input
@@ -85,11 +85,12 @@ void labinit( void ) {
   IPCSET(6) = 0x17000000; // Set priority 5, subpriority 3
   IFSCLR(1) = 0x2;  // Clear interrupt flag
   IECSET(1) = 0x2;  // Enable ADC interrupts
-  // Enable global interrupts
-  enable_interrupt();
-
+  // END Initialize ADC
+  // Initialize asteroids
   reset_asteroid_array(asteroidPositions);
   spawn_asteroid(asteroidPositions, &asteroidCount);
+  // Enable global interrupts
+  enable_interrupt();
 }
 
 /* This function is called repetitively from the main program */

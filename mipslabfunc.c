@@ -386,28 +386,28 @@ char * itoaconv( int num )
 //Extra commands for tasks such as spawning and collission calculation
 
 //Asteroid Spawn:
-void reset_asteroid_array(int* location, int max)
+void reset_asteroid_array(int* location)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<20; i+=2)
 	{
 		location[i] = -1;
 	}
 }
 
-void reset_bullet_array(int* location, int max)
+void reset_bullet_array(int* location)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<200; i+=2)
 	{
 		location[i] = 128;
 	}
 }
 
-void spawn_asteroid (int *location, int quantity, int max)
+void spawn_asteroid (int *location, int quantity)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<20; i+=2)
 	{
 		if (location[i] == -1)
 		{
@@ -419,7 +419,7 @@ void spawn_asteroid (int *location, int quantity, int max)
 	}
 }
 
-void spawn_bullet (int x, int y, int *location, int max)
+void spawn_bullet(int x, int y, int* location, int max)
 {
 	int i;
 	for (i = 0; i < max; i += 2) {
@@ -429,24 +429,6 @@ void spawn_bullet (int x, int y, int *location, int max)
 			return;
 		}
 	}
-}
-// Collission calculation functions:
-
-int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
-{
-	int i;
-	for(i=x; i < x+7; i++) //i will check framebuffer locations where ship will render. Columns.
-	{
-		int j;
-		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
-		{
-			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
-			{
-				return 1;
-			}
-		}
-	}
-	return 0;
 }
 
 void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int max)
@@ -493,4 +475,21 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 			location[i] = 128;
 		}
   }
+// Collission calculation functions:
+
+int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
+{
+	int i;
+	for(i=x; i < x+7; i++) //i will check framebuffer locations where ship will render. Columns.
+	{
+		int j;
+		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
+		{
+			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
 }

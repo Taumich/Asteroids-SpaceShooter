@@ -28,9 +28,9 @@ int stickY = 0;
 int button = 0;
 int button3 = 0;
 int rep = 0;
-int bulletPositions[MAX_BULLETS*2];
+int bulletPositions[MAX_BULLETS];
 int bulletCount = 0;
-int asteroidPositions[MAX_ASTEROIDS*2];
+int asteroidPositions[MAX_ASTEROIDS];
 int asteroidCount = 0;
 
 /* Interrupt Service Routine */
@@ -78,10 +78,8 @@ void user_isr( void )
   //bullet
   display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
-  /*display_insert_data(&displaybuffer, bulletPositions[0]++, bulletPositions[1], bullet_level1, 3);
-  display_insert_data(&displaybuffer, bulletPositions[2]++, bulletPositions[3], bullet_level1, 3);
-  display_insert_data(&displaybuffer, bulletPositions[4]+=2, bulletPositions[5], bullet_level2, 3);
-  display_insert_data(&displaybuffer, bulletPositions[6]+=3, bulletPositions[7], bullet_level1, 3);*/
+  //bullet
+  display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
 
   display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
   display_update_frame(&displaybuffer);
@@ -114,10 +112,9 @@ void labinit( void ) {
   IFSCLR(1) = 0x2;  // Clear interrupt flag
   IECSET(1) = 0x2;  // Enable ADC interrupts
   // END Initialize ADC
-  // Initialize asteroids
-  reset_bullet_array(bulletPositions, MAX_BULLETS*2);
-  reset_asteroid_array(asteroidPositions, MAX_ASTEROIDS*2);
-  spawn_asteroid(asteroidPositions, &asteroidCount);
+  // Initialize asteroids and bullets
+  reset_asteroid_array(asteroidPositions);
+  reset_bullet_array(bulletPositions);
   // Enable global interrupts
   enable_interrupt();
 }

@@ -475,6 +475,7 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 			location[i] = 128;
 		}
   }
+}
 // Collission calculation functions:
 
 int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)

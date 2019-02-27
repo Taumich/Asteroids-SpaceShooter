@@ -7,9 +7,15 @@
 #define MAX_ASTEROIDS 30
 
 uint8_t displaybuffer[512];
-int ship_up[7] = {112,8,54,75,54,8,112};
-int ship_right[7] = {73,85,85,42,20,28,8};
+// Define list of sprites
+int ship_v1[] = {73,85,85,42,20,28,8};
+int ship_v2[] = {85,127,107,85,85,28,8};
+int ship_v3[] = {54,73,85,107,99,54,20};
+int active_ship[3] = {ship_v1, ship_v2, ship_v3};
+
 int asteroid[7] = {126,255,255,255,255,255,126};
+int shot_level1[3] = {2,2,0};
+int shot_level2[3] = {2,7,2};
 int pixel[1] = {1};
 
 int xpos = 0;
@@ -49,13 +55,16 @@ void user_isr( void )
   //loop for displaying all active asteroids
   display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
 
-  if (collission_check(displaybuffer, xpos, ypos, ship_right) == 1)
+  if (collission_check(displaybuffer, xpos, ypos, active_ship[0]) == 1)
   {
     xpos = 30;
     ypos = 0;
   }
 
-  display_insert_data(&displaybuffer, xpos, ypos, ship_right, 7);
+  //bullet
+  display_insert_data(&displaybuffer, xpos+9, ypos, shot_level1, 3);
+
+  display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
   display_update_frame(&displaybuffer);
   IFSCLR(1) = 0x2;  // Clear interrupt flag
 }

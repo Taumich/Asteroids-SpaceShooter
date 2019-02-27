@@ -386,19 +386,28 @@ char * itoaconv( int num )
 //Extra commands for tasks such as spawning and collission calculation
 
 //Asteroid Spawn:
-void reset_asteroid_array(int* location)
+void reset_asteroid_array(int* location, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i=0; i<max; i+=2)
 	{
 		location[i] = -1;
 	}
 }
 
-void spawn_asteroid (int *location, int quantity)
+void reset_bullet_array(int* location, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i=0; i<max; i+=2)
+	{
+		location[i] = 128;
+	}
+}
+
+void spawn_asteroid (int *location, int quantity, int max)
+{
+	int i;
+	for (i=0; i<max; i+=2)
 	{
 		if (location[i] == -1)
 		{
@@ -410,10 +419,22 @@ void spawn_asteroid (int *location, int quantity)
 	}
 }
 
-void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite)
+void spawn_bullet (int x, int y, int *location, int max)
 {
 	int i;
-	for (i=0; i<20; i+=2)
+	for (i = 0; i < max; i += 2) {
+		if (location[i] > 127) {
+			location[i] = x+7;
+			location[i+1] = y+2;
+			return;
+		}
+	}
+}
+
+void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int max)
+{
+	int i;
+	for (i=0; i<max; i+=2)
   {
 		if (location[i] > -1) //checking only x-values for active state (not -1)
 		{
@@ -423,6 +444,23 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite)
 		else if (location[i] != -1)
 		{
 			location[i] = -1;
+		}
+  }
+}
+
+void display_all_bullets(uint8_t* framebuffer, int* location, int* sprite, int max)
+{
+	int i;
+	for (i=0; i<max; i+=2)
+  {
+		if (location[i] < 127) //checking only x-values for active state (not 127)
+		{
+			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
+			location[i]+=4;
+		}
+		else if (location[i] != 128)
+		{
+			location[i] = 128;
 		}
   }
 }

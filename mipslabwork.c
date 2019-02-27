@@ -2,9 +2,9 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-#define MAX_BULLETS 30
+#define MAX_BULLETS 80
 #define BULLET_VELOCITY 2
-#define MAX_ASTEROIDS 30
+#define MAX_ASTEROIDS 10
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -14,8 +14,10 @@ int ship_v3[] = {54,73,85,107,99,54,20};
 int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
 int asteroid[7] = {126,255,255,255,255,255,126};
+
 int bullet_level1[3] = {2,2,0};
 int bullet_level2[3] = {2,7,2};
+int bullet[2] = {bullet_level1, bullet_level2};
 int pixel[1] = {1};
 
 int xpos = 0;
@@ -24,8 +26,9 @@ int stickX = 0;
 int stickY = 0;
 int button = 0;
 int rep = 0;
-int bulletPositions[MAX_BULLETS]
-int asteroidPositions[MAX_ASTEROIDS];
+int bulletPositions[MAX_BULLETS*2];
+int bulletCount = 0;
+int asteroidPositions[MAX_ASTEROIDS*2];
 int asteroidCount = 0;
 
 /* Interrupt Service Routine */
@@ -39,13 +42,14 @@ void user_isr( void )
   xpos++;
   rep++;
 
-  if (rep=2)
+  if (rep=3)
   {
     rep = 0;
     ypos++;
+    spawn_bullet (xpos, ypos, bulletPositions, MAX_BULLETS*2);
     if (ypos > 16)
     {
-      spawn_asteroid(asteroidPositions, &asteroidCount);
+      spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
       ypos = 0;
       xpos = 0;
     }
@@ -54,17 +58,21 @@ void user_isr( void )
   //command for spawning a new asteroid
   //display_insert_data(&displaybuffer, asteroidPositions[0], asteroidPositions[1], asteroid, 7);
   //loop for displaying all active asteroids
-  display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
+  display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
 
-  if (collission_check(displaybuffer, xpos, ypos, active_ship[0]) == 1)
+  if (collission_check(displaybuffer, xpos, ypos, active_ship[1]) == 1)
   {
     xpos = 30;
     ypos = 0;
   }
   // bullet here
-
   //bullet
-  display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
+  display_all_bullets(displaybuffer, bulletPositions, bullet_level1, MAX_BULLETS*2);
+
+  /*display_insert_data(&displaybuffer, bulletPositions[0]++, bulletPositions[1], bullet_level1, 3);
+  display_insert_data(&displaybuffer, bulletPositions[2]++, bulletPositions[3], bullet_level1, 3);
+  display_insert_data(&displaybuffer, bulletPositions[4]+=2, bulletPositions[5], bullet_level2, 3);
+  display_insert_data(&displaybuffer, bulletPositions[6]+=3, bulletPositions[7], bullet_level1, 3);*/
 
   display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
   display_update_frame(&displaybuffer);
@@ -98,7 +106,8 @@ void labinit( void ) {
   IECSET(1) = 0x2;  // Enable ADC interrupts
   // END Initialize ADC
   // Initialize asteroids
-  reset_asteroid_array(asteroidPositions);
+  reset_bullet_array(bulletPositions, MAX_BULLETS*2);
+  reset_asteroid_array(asteroidPositions, MAX_ASTEROIDS*2);
   spawn_asteroid(asteroidPositions, &asteroidCount);
   // Enable global interrupts
   enable_interrupt();

@@ -5,7 +5,7 @@
 #define MAX_BULLETS 20
 #define BULLET_VELOCITY 2
 #define MAX_ASTEROIDS 15
-#define SPAWN_FREQUENCY 10
+#define SPAWN_INTERVAL 10
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -53,7 +53,7 @@ void user_isr( void )
 
   //checking inputs and timers for spawning of new entities
   rep++;
-    if (rep / SPAWN_INTERWAL) {
+    if (rep / SPAWN_INTERVAL) {
         if(randomNumberGenerator(xpos + ypos + bulletPositions[0] + asteroidPositions[0]) >= 5)
         {
             spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);

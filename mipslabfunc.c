@@ -283,7 +283,7 @@ void spawn_asteroid (int *location, int quantity, int max)
 		{
 			location[i] = 121;
 			//randomized y-location:
-			int newLoc = (location[0] % 12) + location[2] % 11 + 4 + location[4] % 4;
+			int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
 			location[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
 			//location[i+1] = 5;
 			return;

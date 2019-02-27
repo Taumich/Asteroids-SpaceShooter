@@ -5,7 +5,7 @@
 #define MAX_BULLETS 20
 #define BULLET_INTERVAL 4
 #define MAX_ASTEROIDS 15
-#define SPAWN_INTERVAL 8
+#define SPAWN_INTERVAL 10
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -41,6 +41,8 @@ int asteroidHealth[MAX_ASTEROIDS];
 int asteroidCount = 0;
 int playerEnergy = 8; //health and energy is the same (shields)
 
+volatile int* ledoutput = (volatile int*) 0xbf886100;
+
 /* Interrupt Service Routine */
 void user_isr( void )
 {
@@ -60,7 +62,7 @@ void user_isr( void )
             spawn_asteroid(asteroidPositions, asteroidCount, asteroidHealth, MAX_ASTEROIDS*2);
         }
     }
-
+    *ledoutput++;
     //Movement
     if (rep % 2) {
       if (stickX == 0) {
@@ -68,7 +70,7 @@ void user_isr( void )
             xpos++;
       }
       else if (stickX == 0x3ff) {
-          if(xpos > -1)
+          if(xpos > 1)
             xpos--;
       }
       if (stickY == 0) {

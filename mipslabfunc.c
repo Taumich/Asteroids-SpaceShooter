@@ -23,6 +23,8 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
+#define AST_INACTIVE -7
+
 /* quicksleep:
    A simple function to create a small delay.
    Very inefficient use of computing resources,
@@ -211,30 +213,49 @@ void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sp
 		return; // if out of bounds on y-axis, exit code from here
 	}
 	// Position on the current page byte segment
-	int ypos = y % 8;
+	//int ypos = y % 8;
 	// Page of the display
-	int ypag = y / 8;
+	//int ypag = y / 8;
 	// Variable to hold the root byte segment of the display
 	uint8_t* root = framebuffer;
 	// Chooses start position
-	framebuffer += x + 128 * ypag;
+	//framebuffer += x + 128 * (y/8);
 	// Creates an offset variable that is overridden when the sprite is
 	// out of bounds on the left side of the display (x-axis)
 
-	int offset = 0;
-	if (framebuffer < root) {
-		offset = (root - framebuffer) >> 3;
-	}
+	//int offset = 0;
+	//if (framebuffer < root) {
+	//	offset = (root-framebuffer) >> 3;
+	//}
 
 	// framebuffer is now functional for x and y axis, i am not completely
 	// sure how this code works but after intensive testing, this solved it:
 	int i;	//used for width of the ship
-	for (i = 0; i < sprite_size - offset; i++) {
+	for (i = 0; i < sprite_size; i++) //column
+	{
+		//int xpx;
+		//xpx = i+x;
+		/*for(j = 0; j < sprite_size; j++) //row
+		{
+			//pixel to work with
+			//int xpx, ypx, column;
+			//ypx = j+y;
+
+			//framebuffer++;
+			//sprite++;
+		}*/
+		if(0 < i+x && i+x < 127)
+		{
+			framebuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
+			framebuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
+		}
+	}
+	/*for (i = 0; i < sprite_size - offset; i++) {
 		*framebuffer |= sprite[offset] << (y % 8);
 		*(framebuffer+128) |= sprite[offset] >> 8-(y % 8);
 		framebuffer++;
 		sprite++;
-	}
+	}*/
 }
 
 void display_clear(uint8_t* framebuffer) {
@@ -270,7 +291,7 @@ void reset_asteroid_array(int* location, int max)
 	int i;
 	for (i=0; i<max; i+=2)
 	{
-		location[i] = -1;
+		location[i] = AST_INACTIVE;
 	}
 }
 
@@ -288,7 +309,7 @@ void spawn_asteroid (int *location, int quantity, int* asthp, int max)
 	int i;
 	for (i=0; i<max; i+=2)
 	{
-		if (location[i] < 0)
+		if (location[i] <= AST_INACTIVE)
 		{
 			location[i] = 128;
 			int randVal = randomNumberGenerator(location[0]);
@@ -321,14 +342,14 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* asthp, int*
 	int i;
 	for (i=0; i<max; i+=2)
   	{
-		if (location[i] > -1) //checking only x-values for active state (not -1)
+		if (location[i] > AST_INACTIVE) //checking only x-values for active state (not -7)
 		{
 			display_insert_data(framebuffer, location[i], location[i+1], sprite[asthp[i/2]/3], 7);
 			location[i]--;
 		}
-		else if (location[i] != -1)
+		else if (location[i] != AST_INACTIVE)
 		{
-			location[i] = -1;
+			location[i] = AST_INACTIVE;
 		}
   	}
 }
@@ -344,7 +365,7 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 			int j;
 			for (j=0; j<maxast; j+=2)
 			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
-				if(	asteroids[j] != -1 &&
+				if(	asteroids[j] != AST_INACTIVE &&
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
@@ -352,7 +373,7 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 					if(asthp[j/2] < 1)
 					{
 						location[i] = 128;
-						asteroids[j] = -1;
+						asteroids[j] = AST_INACTIVE;
 					}
 				}
 			}
@@ -377,9 +398,12 @@ int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
 		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
 		{
 			//if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
-			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
+			if(0 < i+x && i+x < 127)
 			{
-				return 1;
+				if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
+				{
+					return 1;
+				}
 			}
 		}
 	}

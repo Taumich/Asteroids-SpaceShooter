@@ -53,8 +53,8 @@ void user_isr( void )
 
   //checking inputs and timers for spawning of new entities
   rep++;
-    if (rep / SPAWN_FREQUENCY) {
-        if(randomNumberGenerator(xpos + ypos + bulletPositions[0] + asteroidPositions[0]) >=)
+    if (rep / SPAWN_INTERWAL) {
+        if(randomNumberGenerator(xpos + ypos + bulletPositions[0] + asteroidPositions[0]) >= 5)
         {
             spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
         }

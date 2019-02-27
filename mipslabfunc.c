@@ -283,7 +283,7 @@ void reset_bullet_array(int* location, int max)
 	}
 }
 
-void spawn_asteroid (int *location, int quantity, int max)
+void spawn_asteroid (int *location, int quantity, int* asthp, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
@@ -291,11 +291,12 @@ void spawn_asteroid (int *location, int quantity, int max)
 		if (location[i] < 0)
 		{
 			location[i] = 128;
+			int randVal = randomNumberGenerator(location[0]);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
-			int newLoc = 2*randomNumberGenerator(location[0]) + randomNumberGenerator(location[0])/2;
+			int newLoc = 2*randomNumberGenerator(randVal) + randVal/2;
 			location[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
-			//location[i+1] = 5;
+			asthp[i/2] = 10;
 			return;
 		}
 	}
@@ -308,21 +309,21 @@ void spawn_bullet (int x, int y, int* location, int max)
 	{
 		if (location[i] > 127)
 		{
-			location[i] = x;
-			location[i+1] = y;
+			location[i] = x+7;
+			location[i+1] = y+2;
 			return;
 		}
 	}
 }
 
-void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int max)
+void display_all_asteroids(uint8_t* framebuffer, int* location, int* asthp, int* sprite, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
   	{
 		if (location[i] > -1) //checking only x-values for active state (not -1)
 		{
-			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
+			display_insert_data(framebuffer, location[i], location[i+1], sprite[asthp[i/2]/3], 7);
 			location[i]--;
 		}
 		else if (location[i] != -1)
@@ -347,8 +348,12 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
-					location[i] = 128;
-					asteroids[j] = -1;
+					asthp[j/2]--;
+					if(asthp[j/2] < 1)
+					{
+						location[i] = 128;
+						asteroids[j] = -1;
+					}
 				}
 			}
 			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);

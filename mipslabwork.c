@@ -3,9 +3,9 @@
 #include "mipslab.h"  /* Declatations for these labs */
 
 #define MAX_BULLETS 20
-#define BULLET_VELOCITY 2
+#define BULLET_INTERVAL 4
 #define MAX_ASTEROIDS 15
-#define SPAWN_INTERVAL 10
+#define SPAWN_INTERVAL 8
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -18,7 +18,7 @@ int asteroid_1[] = {126,255,255,255,255,255,126};
 int asteroid_2[] = {126,255,207,195,207,255,126};
 int asteroid_3[] = {126,207,195,129,195,207,126};
 int asteroid_4[] = {126,129,129,129,129,129,126};
-int asteroid[4] = {asteroid_1, asteroid_2, asteroid_3, asteroid_4};
+int asteroid[4] = {asteroid_4, asteroid_3, asteroid_2, asteroid_1};
 
 int bullet_level1[] = {2,2,0};
 int bullet_level2[] = {2,7,2};
@@ -53,35 +53,41 @@ void user_isr( void )
 
   //checking inputs and timers for spawning of new entities
   rep++;
-    if (rep / SPAWN_INTERVAL) {
-        if(randomNumberGenerator(xpos + ypos + bulletPositions[0] + asteroidPositions[0]) >= 5)
+  rep = rep % 64;
+    if (!(rep % SPAWN_INTERVAL) ) {
+        if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
         {
-            spawn_asteroid(asteroidPositions, &asteroidCount, MAX_ASTEROIDS*2);
+            spawn_asteroid(asteroidPositions, asteroidCount, asteroidHealth, MAX_ASTEROIDS*2);
         }
-        rep = 0;
     }
+
+    //Movement
     if (rep % 2) {
       if (stickX == 0) {
-        xpos++;
+          if(xpos < 120)
+            xpos++;
       }
-      if (stickX == 0x3ff) {
-        xpos--;
+      else if (stickX == 0x3ff) {
+          if(xpos > -1)
+            xpos--;
       }
       if (stickY == 0) {
-        ypos--;
+          if(ypos > 0)
+            ypos--;
       }
       if (stickY == 0x3ff) {
-        ypos++;
+          if(ypos < 24)
+            ypos++;
       }
     }
 
-    if ( rep % 4 )
+    if ( !(rep % BULLET_INTERVAL) )
     {
         spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
     }
 
 //rendering all active asteroids
-    display_all_asteroids(displaybuffer, asteroidPositions, asteroid[0], MAX_ASTEROIDS*2);
+    display_all_asteroids(displaybuffer, asteroidPositions, asteroidHealth, asteroid, MAX_ASTEROIDS*2);
 
 //checking for asteroid collission with ship
     if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))

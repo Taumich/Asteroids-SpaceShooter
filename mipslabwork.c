@@ -14,8 +14,8 @@ int ship_v3[] = {54,73,85,107,99,54,20};
 int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
 int asteroid[7] = {126,255,255,255,255,255,126};
-int shot_level1[3] = {2,2,0};
-int shot_level2[3] = {2,7,2};
+int bullet_level1[3] = {2,2,0};
+int bullet_level2[3] = {2,7,2};
 int pixel[1] = {1};
 
 int xpos = 0;
@@ -24,7 +24,8 @@ int stickX = 0;
 int stickY = 0;
 int button = 0;
 int rep = 0;
-int asteroidPositions[20];
+int bulletPositions[MAX_BULLETS]
+int asteroidPositions[MAX_ASTEROIDS];
 int asteroidCount = 0;
 
 /* Interrupt Service Routine */
@@ -55,11 +56,7 @@ void user_isr( void )
   //loop for displaying all active asteroids
   display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
 
-<<<<<<< HEAD
   if (collission_check(displaybuffer, xpos, ypos, active_ship[0]) == 1)
-=======
-  if (collission_check(displaybuffer, xpos, ypos, ship_right))
->>>>>>> d73fc1333e837c5252f8fd493116cc1a6ebfa4d6
   {
     xpos = 30;
     ypos = 0;
@@ -67,7 +64,7 @@ void user_isr( void )
   // bullet here
 
   //bullet
-  display_insert_data(&displaybuffer, xpos+9, ypos, shot_level1, 3);
+  display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
 
   display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
   display_update_frame(&displaybuffer);

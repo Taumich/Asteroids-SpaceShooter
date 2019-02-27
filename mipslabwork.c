@@ -65,7 +65,7 @@ void user_isr( void )
     display_all_asteroids(displaybuffer, asteroidPositions, asteroid, MAX_ASTEROIDS*2);
 
     if (button3) {
-      spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
+      //spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
     }
 
     if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
@@ -87,7 +87,7 @@ void user_isr( void )
   //bullet
   //display_insert_data(&displaybuffer, xpos+9, ypos, bullet_level1, 3);
 */
-    //display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, bullet_level1, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
     display_insert_data(&displaybuffer, xpos, ypos, active_ship[0], 7);
     display_update_frame(&displaybuffer);

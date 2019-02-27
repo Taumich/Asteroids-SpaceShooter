@@ -437,7 +437,7 @@ int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
 		int j;
 		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
 		{
-			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
+			if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
 			{
 				return 1;
 			}

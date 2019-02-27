@@ -413,7 +413,7 @@ void spawn_asteroid (int *location, int quantity, int max)
 		{
 			location[i] = 121;
 			//randomized y-location:
-			location[i+1] = location[0] % 16 + location[2] % 13 + 4 + location[4] % 4 ;
+			location[i+1] = location[0] % 16 + location[2] % 13 + 4 + location[4] % 4;
 			return;
 		}
 	}
@@ -430,41 +430,6 @@ void spawn_bullet (int x, int y, int *location, int max)
 		}
 	}
 }
-
-void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int max)
-{
-	int i;
-	for (i=0; i<max; i+=2)
-  {
-		if (location[i] > -1) //checking only x-values for active state (not -1)
-		{
-			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
-			location[i]-=3;
-		}
-		else if (location[i] != -1)
-		{
-			location[i] = -1;
-		}
-  }
-}
-
-void display_all_bullets(uint8_t* framebuffer, int* location, int* sprite, int max)
-{
-	int i;
-	for (i=0; i<max; i+=2)
-  {
-		if (location[i] < 127) //checking only x-values for active state (not 127)
-		{
-			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
-			location[i]+=4;
-		}
-		else if (location[i] != 128)
-		{
-			location[i] = 128;
-		}
-  }
-}
-
 // Collission calculation functions:
 
 int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
@@ -482,4 +447,50 @@ int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
 		}
 	}
 	return 0;
+}
+
+void display_all_asteroids(uint8_t* framebuffer, int* location, int* sprite, int max)
+{
+	int i;
+	for (i=0; i<max; i+=2)
+  {
+		if (location[i] > -1) //checking only x-values for active state (not -1)
+		{
+			display_insert_data(framebuffer, location[i], location[i+1], sprite, 7);
+			location[i]--;
+		}
+		else if (location[i] != -1)
+		{
+			location[i] = -1;
+		}
+  }
+}
+
+void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, int* sprite, int maxbul, int maxast)
+{
+	int i;
+	for (i=0; i<maxbul; i+=2)
+  {
+		if (location[i] < 127) //checking only x-values for active state (not 127)
+		{
+			// check which asteroid collides with bullet
+			int j;
+			for (j=0; j<maxast; j+=2)
+			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
+				if(	asteroids[j] != -1 &&
+					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
+					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
+				{
+					location[i] = 128;
+					asteroids[j] = -1;
+				}
+			}
+			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
+			location[i]+=4;
+		}
+		else if (location[i] != 128)
+		{
+			location[i] = 128;
+		}
+  }
 }

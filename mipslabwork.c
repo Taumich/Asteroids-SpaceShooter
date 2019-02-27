@@ -55,11 +55,16 @@ void user_isr( void )
   //loop for displaying all active asteroids
   display_all_asteroids(displaybuffer, asteroidPositions, asteroid);
 
+<<<<<<< HEAD
   if (collission_check(displaybuffer, xpos, ypos, active_ship[0]) == 1)
+=======
+  if (collission_check(displaybuffer, xpos, ypos, ship_right))
+>>>>>>> d73fc1333e837c5252f8fd493116cc1a6ebfa4d6
   {
     xpos = 30;
     ypos = 0;
   }
+  // bullet here
 
   //bullet
   display_insert_data(&displaybuffer, xpos+9, ypos, shot_level1, 3);

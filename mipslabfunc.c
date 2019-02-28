@@ -143,6 +143,41 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
+#define ITOA_BUFSIZ ( 24 )
+char* itoaconv( int num )
+{
+  register int i, sign;
+  static char itoa_buffer[ ITOA_BUFSIZ ];
+  static const char maxneg[] = "-2147483648";
+
+  itoa_buffer[ ITOA_BUFSIZ - 1 ] = 0;   /* Insert the end-of-string marker. */
+  sign = num;                           /* Save sign. */
+  if( num < 0 && num - 1 > 0 )          /* Check for most negative integer */
+  {
+    for( i = 0; i < sizeof( maxneg ); i += 1 )
+    itoa_buffer[ i + 1 ] = maxneg[ i ];
+    i = 0;
+  }
+  else
+  {
+    if( num < 0 ) num = -num;           /* Make number positive. */
+    i = ITOA_BUFSIZ - 2;                /* Location for first ASCII digit. */
+    do {
+      itoa_buffer[ i ] = num % 10 + '0';/* Insert next digit. */
+      num = num / 10;                   /* Remove digit from number. */
+      i -= 1;                           /* Move index to next empty position. */
+    } while( num > 0 );
+    if( sign < 0 )
+    {
+      itoa_buffer[ i ] = '-';
+      i -= 1;
+    }
+  }
+  /* Since the loop always sets the index i to the next empty position,
+   * we must add 1 in order to return a pointer to the first occupied position. */
+  return( &itoa_buffer[ i + 1 ] );
+}
+
 void display_image(int x, const uint8_t *data) {
 	int i, j;
 
@@ -216,6 +251,26 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 		{
 			displaybuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
 			displaybuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
+		}
+	}
+}
+
+void display_score() {
+	int i = 0;
+	int n = 0;
+	char* p = itoaconv(score);
+	while (p[i] >= 48) {
+		n++;
+		i++;
+	}
+	for (i = 0; i < n*5+1; i++) {
+		displaybuffer[(127-(n*5+1))+i] &= ~SCOREPANEL;
+	}
+	int f;
+	for (i = 0; i < 6; i++) {
+		f = fonts+(p[i]-48)*4;
+		if (!(f < fonts)) {
+			display_insert_data(97+(6-n)*5+i*5,0,f,4);
 		}
 	}
 }
@@ -339,7 +394,7 @@ void display_all_bullets
 					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
-						score += 5;
+						score += 1000000;
 						asteroids[j] = AST_INACTIVE;
 					}
 				}

@@ -67,6 +67,7 @@ void user_isr( void )
     display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
     display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
+    display_score();
     display_update_frame();
     IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
@@ -82,7 +83,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0x1002; // Set timer period
+  PR3 = 0xafff; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;

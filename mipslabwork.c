@@ -5,7 +5,7 @@
 #define MAX_BULLETS 20
 #define BULLET_INTERVAL 4
 #define MAX_ASTEROIDS 15
-#define SPAWN_INTERVAL 10
+#define SPAWN_INTERVAL 20
 
 uint8_t displaybuffer[512];
 // Define list of sprites
@@ -22,8 +22,10 @@ int asteroid[4] = {asteroid_4, asteroid_3, asteroid_2, asteroid_1};
 
 int bullet_level1[] = {2,2,0};
 int bullet_level2[] = {2,7,2};
-int bullet_level3[] = {7,7,2};
-int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
+int bullet_level3[] = {7,5,7};
+//bullet data: {appearance, speed, damage}
+int bullet[3] = {bullet_level1, bullet_level2,bullet_level3};
+int bullets_level[MAX_BULLETS];
 
 //int pixel[1] = {1};
 
@@ -41,7 +43,6 @@ int asteroidHealth[MAX_ASTEROIDS];
 int asteroidCount = 0;
 int playerEnergy = 8; //health and energy is the same (shields)
 
-volatile int* ledoutput = (volatile int*) 0xbf886100;
 
 /* Interrupt Service Routine */
 void user_isr( void )
@@ -62,7 +63,9 @@ void user_isr( void )
             spawn_asteroid(asteroidPositions, asteroidCount, asteroidHealth, MAX_ASTEROIDS*2);
         }
     }
-    *ledoutput++;
+
+    PORTE = rep;
+
     //Movement
     if (rep % 2) {
       if (stickX == 0) {
@@ -83,6 +86,19 @@ void user_isr( void )
       }
     }
 
+    if(button3)
+    {
+        bullet[0] = bullet_level2;
+        bullet[1] = 3;
+        bullet[2] = 2;
+    }
+    else
+    {
+        bullet[0] = bullet_level1;
+        bullet[1] = 4;
+        bullet[2] = 1;
+    }
+
     if ( !(rep % BULLET_INTERVAL) )
     {
         spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
@@ -99,7 +115,7 @@ void user_isr( void )
     }
 
 //spawning all active bullets
-    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, asteroidHealth, bullet[0], MAX_BULLETS*2, MAX_ASTEROIDS*2);
+    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
     display_insert_data(displaybuffer, xpos, ypos, active_ship[0], 7);
     display_update_frame(displaybuffer);
@@ -109,6 +125,9 @@ void user_isr( void )
 
 /* Lab-specific initialization goes here */
 void labinit( void ) {
+
+  TRISECLR = 0xff;
+  PORTE = 0xff;
   // Digital pin 1 to button
   TRISFSET = 0x0004;
   // Initialize Timer3

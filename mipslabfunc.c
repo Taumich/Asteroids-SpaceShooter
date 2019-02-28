@@ -320,7 +320,8 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* asthp, int*
   	}
 }
 
-void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, int* asthp, int* sprite, int maxbul, int maxast)
+void display_all_bullets
+(uint8_t* framebuffer, int* location, int* asteroids, int* asthp, int* b_sprite, int* b_level, int maxbul, int maxast)
 {
 	int i;
 	for (i=0; i<maxbul; i+=2)
@@ -335,16 +336,16 @@ void display_all_bullets(uint8_t* framebuffer, int* location, int* asteroids, in
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
-					asthp[j/2]--;
+					asthp[j/2]-=bullet_data[2];
+					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
-						location[i] = 128;
 						asteroids[j] = AST_INACTIVE;
 					}
 				}
 			}
-			display_insert_data(framebuffer, location[i], location[i+1], sprite, 3);
-			location[i]+=4;
+			display_insert_data(framebuffer, location[i], location[i+1], b_sprite[b_level[i/2]], 3);
+			location[i]+=bullet_data[1];
 
 		}
 		else if (location[i] != 128)

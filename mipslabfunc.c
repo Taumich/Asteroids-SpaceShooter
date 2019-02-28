@@ -301,19 +301,19 @@ void spawn_bullet (int set_bullet_level)
 	}
 }
 
-void display_all_asteroids(int* location, int* asthp, int* sprite, int max)
+void display_all_asteroids(void)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<MAX_ASTEROIDS*2; i+=2)
   	{
-		if (location[i] > AST_INACTIVE) //checking only x-values for active state (not -7)
+		if (asteroidPositions[i] > AST_INACTIVE) //checking only x-values for active state (not -7)
 		{
-			display_insert_data(location[i], location[i+1], sprite[asthp[i/2]/3], 7);
-			location[i]--;
+			display_insert_data(asteroidPositions[i], asteroidPositions[i+1], asteroid[asteroidHealth[i/2]/3], 7);
+			asteroidPositions[i]--;
 		}
-		else if (location[i] != AST_INACTIVE)
+		else if (asteroidPositions[i] != AST_INACTIVE)
 		{
-			location[i] = AST_INACTIVE;
+			asteroidPositions[i] = AST_INACTIVE;
 		}
   	}
 }

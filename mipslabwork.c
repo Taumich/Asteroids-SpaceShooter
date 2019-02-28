@@ -53,7 +53,7 @@ void user_isr( void )
     }
 
 //rendering all active asteroids
-    display_all_asteroids(asteroidPositions, asteroidHealth, asteroid, MAX_ASTEROIDS*2);
+    display_all_asteroids();
 
 //checking for asteroid collission with ship
     if (collission_check(xpos, ypos, active_ship[1]))

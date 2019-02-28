@@ -255,7 +255,7 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 	}
 }
 
-void display_score() {
+void display_score(void) {
 	int i = 0;
 	int n = 0;
 	if (score < 0) {
@@ -275,6 +275,34 @@ void display_score() {
 		if (!(f < fonts)) {
 			display_insert_data(97+(6-n)*5+i*5,0,f,4);
 		}
+	}
+}
+
+void display_energy(void) {
+	if (playerEnergy > 8) {
+		playerEnergy = 8;
+	}
+	if (playerEnergy < 0) {
+		playerEnergy = 0;
+	}
+	if (playerEnergy == 8) {
+		PORTE = 0xff;
+	} else if (playerEnergy == 7) {
+		PORTE = 0x7f;
+	} else if (playerEnergy == 6) {
+		PORTE = 0x3f;
+	} else if (playerEnergy == 5) {
+		PORTE = 0x1f;
+	} else if (playerEnergy == 4) {
+		PORTE = 0xf;
+	} else if (playerEnergy == 3) {
+		PORTE = 0x7;
+	} else if (playerEnergy == 2) {
+		PORTE = 0x3;
+	} else if (playerEnergy == 1) {
+		PORTE = 0x1;
+	} else if (playerEnergy == 0) {
+		PORTE = 0x0;
 	}
 }
 

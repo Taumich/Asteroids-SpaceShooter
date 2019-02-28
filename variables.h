@@ -52,5 +52,5 @@ int bulletPositions[MAX_BULLETS*2];
 static int bulletCount = 0;
 int asteroidPositions[MAX_ASTEROIDS*2];
 int asteroidHealth[MAX_ASTEROIDS];
-static int playerEnergy = 8; //health and energy is the same (shields)
+int playerEnergy; //health and energy is the same (shields)
 int score;

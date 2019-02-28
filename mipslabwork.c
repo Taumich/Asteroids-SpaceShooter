@@ -17,65 +17,73 @@ void user_isr( void )
 
   //checking inputs and timers for spawning of new entities
   rep++;
-  rep = rep % 64;
-    if (!(rep % SPAWN_INTERVAL) ) {
-        if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
-        {
-            spawn_asteroid();
-        }
-    }
-
-    PORTE = rep;
-
-    //Movement
-    if (rep % 2) {
-      if (stickX == 0) {
-          if(xpos < 120)
-            xpos++;
-      }
-      else if (stickX == 0x3ff) {
-          if(xpos > 1)
-            xpos--;
-      }
-      if (stickY == 0) {
-          if(ypos > 0)
-            ypos--;
-      }
-      if (stickY == 0x3ff) {
-          if(ypos < 24)
-            ypos++;
-      }
-    }
-
-    if ( !(rep % BULLET_INTERVAL) )
+  if (!(rep % SPAWN_INTERVAL) ) {
+    if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {
-        spawn_bullet(pickAmmo());
+      spawn_asteroid();
     }
-
-//rendering all active asteroids
-    display_all_asteroids();
-
-//checking for asteroid collission with ship
-    if (collission_check(xpos, ypos, active_ship[1]))
-    {
-      score -= 20;
-      xpos = 1;
-      ypos = 13;
+  }
+  if (pickAmmo() == 1) {
+    if (!(rep % 20)) {
+      playerEnergy--;
     }
+  } else if (pickAmmo() == 2) {
+    if (!(rep % 15)) {
+      playerEnergy--;
+    }
+  } else if (!(rep % 40)) {
+    playerEnergy++;
+  }
+  //Movement
+  if (rep % 2) {
+    if (stickX == 0) {
+      if(xpos < 120)
+        xpos++;
+    }
+    else if (stickX == 0x3ff) {
+      if(xpos > 1)
+        xpos--;
+    }
+    if (stickY == 0) {
+      if(ypos > 0)
+        ypos--;
+    }
+    if (stickY == 0x3ff) {
+      if(ypos < 24)
+        ypos++;
+    }
+  }
 
-//spawning all active bullets
-    display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+  if ( !(rep % BULLET_INTERVAL) )
+  {
+    spawn_bullet(pickAmmo());
+  }
 
-    display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
-    display_score();
-    display_update_frame();
-    IFSCLR(1) = 0x2;  // Clear interrupt flag
+  //rendering all active asteroids
+  display_all_asteroids();
+
+  //checking for asteroid collission with ship
+  if (collission_check(xpos, ypos, active_ship[1]))
+  {
+    score -= 20;
+    playerEnergy -= 4;
+    xpos = 1;
+    ypos = 13;
+  }
+
+  //spawning all active bullets
+  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+
+  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
+  display_score();
+  display_energy();
+  display_update_frame();
+  IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 
 
 /* Lab-specific initialization goes here */
 void labinit( void ) {
-
   TRISECLR = 0xff;
   PORTE = 0xff;
   // Digital pin 1 to button
@@ -107,6 +115,7 @@ void labinit( void ) {
   xpos = 10;
   ypos = 10;
   score = 0;
+  playerEnergy = 8;
   // Enable global interrupts
   enable_interrupt();
 }

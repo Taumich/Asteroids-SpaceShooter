@@ -335,9 +335,11 @@ void display_all_bullets
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
 					asthp[j/2]-=(b_level[i/2] + 1);
+					score++;
 					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
+						score += 5;
 						asteroids[j] = AST_INACTIVE;
 					}
 				}

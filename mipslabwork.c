@@ -83,7 +83,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0xafff; // Set timer period
+  PR3 = 0x100f; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;
@@ -106,6 +106,7 @@ void labinit( void ) {
   reset_bullet_array();
   xpos = 10;
   ypos = 10;
+  score = 0;
   // Enable global interrupts
   enable_interrupt();
 }

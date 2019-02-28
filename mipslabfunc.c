@@ -258,6 +258,9 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 void display_score() {
 	int i = 0;
 	int n = 0;
+	if (score < 0) {
+		score = 0;
+	}
 	char* p = itoaconv(score);
 	while (p[i] >= 48) {
 		n++;
@@ -394,7 +397,7 @@ void display_all_bullets
 					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
-						score += 1000000;
+						score += 5;
 						asteroids[j] = AST_INACTIVE;
 					}
 				}

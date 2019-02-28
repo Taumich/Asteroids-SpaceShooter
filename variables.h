@@ -5,21 +5,33 @@
 #define AST_INACTIVE -7
 
 uint8_t displaybuffer[512];
+static const uint8_t fonts[] = {
+  14,11,11,14,
+  0,12,31,16,
+  25,21,21,18,
+  17,21,21,10,
+  7,4,4,31,
+  23,21,21,9,
+  14,21,21,8,
+  1,25,5,3,
+  10,21,21,10,
+  2,21,21,14
+}
 // Define list of sprites
 static const int ship_v1[] = {73,85,85,42,20,28,8};
-static int ship_v2[] = {85,127,107,85,85,28,8};
-static int ship_v3[] = {54,73,85,107,99,54,20};
+static const int ship_v2[] = {85,127,107,85,85,28,8};
+static const int ship_v3[] = {54,73,85,107,99,54,20};
 static int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
-static int asteroid_1[] = {126,255,255,255,255,255,126};
-static int asteroid_2[] = {126,255,207,195,207,255,126};
-static int asteroid_3[] = {126,207,195,129,195,207,126};
-static int asteroid_4[] = {126,129,129,129,129,129,126};
+static const int asteroid_1[] = {126,255,255,255,255,255,126};
+static const int asteroid_2[] = {126,255,207,195,207,255,126};
+static const int asteroid_3[] = {126,207,195,129,195,207,126};
+static const int asteroid_4[] = {126,129,129,129,129,129,126};
 static int asteroid[4] = {asteroid_4, asteroid_3, asteroid_2, asteroid_1};
 
-static int bullet_level1[] = {2,2,0};
-static int bullet_level2[] = {2,7,2};
-static int bullet_level3[] = {7,5,7};
+static const int bullet_level1[] = {2,2,0};
+static const int bullet_level2[] = {2,7,2};
+static const int bullet_level3[] = {7,5,7};
 //bullet data: {appearance, speed, damage}
 static int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
 int bullets_level[MAX_BULLETS];

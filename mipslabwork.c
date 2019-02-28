@@ -19,7 +19,7 @@ void user_isr( void )
     if (!(rep % SPAWN_INTERVAL) ) {
         if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
         {
-            spawn_asteroid(asteroidPositions, asteroidHealth, MAX_ASTEROIDS*2);
+            spawn_asteroid();
         }
     }
 
@@ -52,7 +52,7 @@ void user_isr( void )
 
     if ( !(rep % BULLET_INTERVAL) )
     {
-        spawn_bullet(xpos, ypos, bulletPositions, bullets_level, 2, MAX_BULLETS*2);
+        spawn_bullet(bulletPositions, bullets_level, 2, MAX_BULLETS*2);
     }
 
 //rendering all active asteroids
@@ -106,6 +106,8 @@ void labinit( void ) {
   // Initialize asteroids and bullets
   reset_asteroid_array(asteroidPositions, MAX_ASTEROIDS*2);
   reset_bullet_array(bulletPositions, MAX_BULLETS*2);
+  xpos = 10;
+  ypos = 10;
   // Enable global interrupts
   enable_interrupt();
 }

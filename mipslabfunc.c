@@ -186,7 +186,7 @@ void display_update(void) {
 	}
 }
 
-void display_update_frame() {
+void display_update_frame(void) {
 	int i, j;
 	for (i = 0; i < 4; i++) {
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -220,7 +220,7 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 	}
 }
 
-void display_clear() {
+void display_clear(void) {
 	int i;
 	for (i = 0; i < 512; i++) {
 		displaybuffer[i] = 0;
@@ -266,26 +266,27 @@ void reset_bullet_array(int* location, int max)
 	}
 }
 
-void spawn_asteroid (int *location, int* asthp, int max)
+void spawn_asteroid (void)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<MAX_ASTEROIDS*2; i+=2)
 	{
-		if (location[i] <= AST_INACTIVE)
+		if (asteroidPositions[i] <= AST_INACTIVE)
 		{
-			location[i] = 128;
-			int randVal = randomNumberGenerator(location[0]);
+			asteroidPositions[i] = 128;
+			int randVal = randomNumberGenerator(asteroidPositions[0]);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
 			int newLoc = 2*randomNumberGenerator(randVal) + randVal/2;
-			location[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
-			asthp[i/2] = 10;
+			asteroidPositions[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
+			// location[i+1] = (location == asteroidPositions)? 1 : 20;
+			asteroidHealth[i/2] = 10;
 			return;
 		}
 	}
 }
 
-void spawn_bullet (int x, int y, int* location, int* b_level, int set_b_level, int max)
+void spawn_bullet (int* location, int* b_level, int set_b_level, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
@@ -293,8 +294,8 @@ void spawn_bullet (int x, int y, int* location, int* b_level, int set_b_level, i
 		if (location[i] > 127)
 		{
 			b_level[i] = set_b_level;
-			location[i] = x+7;
-			location[i+1] = y+2;
+			location[i] = xpos+7;
+			location[i+1] = ypos+2;
 			return;
 		}
 	}

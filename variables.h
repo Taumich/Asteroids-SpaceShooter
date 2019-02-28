@@ -22,20 +22,20 @@ static int bullet_level2[] = {2,7,2};
 static int bullet_level3[] = {7,5,7};
 //bullet data: {appearance, speed, damage}
 static int bullet[3] = {bullet_level1, bullet_level2,bullet_level3};
-static int bullets_level[MAX_BULLETS];
+int bullets_level[MAX_BULLETS];
 
 //static int pixel[1] = {1};
 
-static int xpos = 10;
-static int ypos = 10;
+int xpos;
+int ypos;
 static int stickX = 0;
 static int stickY = 0;
 static int button = 0;
 static int button3 = 0;
 static int rep = 0;
-static int bulletPositions[MAX_BULLETS*2];
+int bulletPositions[MAX_BULLETS*2];
 static int bulletCount = 0;
-static int asteroidPositions[MAX_ASTEROIDS*2];
-static int asteroidHealth[MAX_ASTEROIDS];
+int asteroidPositions[MAX_ASTEROIDS*2];
+int asteroidHealth[MAX_ASTEROIDS];
 static int playerEnergy = 8; //health and energy is the same (shields)
 static int score = 0;

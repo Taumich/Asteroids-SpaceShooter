@@ -9,8 +9,10 @@ void user_isr( void )
   display_clear();
   stickX = ADC1BUF0;
   stickY = ADC1BUF1;
-  button = !((PORTF & 8) >> 3);
+  buttonj = !((PORTF & 8) >> 3);
   button3 = (PORTD & 0x40) >> 6;
+  button2 = (PORTD & 0x20) >> 5;
+  button1 = (PORTD & 0x10) >> 4;
   AD1CON1SET = 0x2; // Start sampling
 
   //checking inputs and timers for spawning of new entities
@@ -45,14 +47,9 @@ void user_isr( void )
       }
     }
 
-    if(button3)
-    {
-
-    }
-
     if ( !(rep % BULLET_INTERVAL) )
     {
-        spawn_bullet(bulletPositions, bullets_level, 2, MAX_BULLETS*2);
+        spawn_bullet(pickAmmo());
     }
 
 //rendering all active asteroids
@@ -85,7 +82,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0x0fff; // Set timer period
+  PR3 = 0x1f00; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;

@@ -21,17 +21,19 @@ static int bullet_level1[] = {2,2,0};
 static int bullet_level2[] = {2,7,2};
 static int bullet_level3[] = {7,5,7};
 //bullet data: {appearance, speed, damage}
-static int bullet[3] = {bullet_level1, bullet_level2,bullet_level3};
+static int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
 int bullets_level[MAX_BULLETS];
 
 //static int pixel[1] = {1};
 
 int xpos;
 int ypos;
-static int stickX = 0;
-static int stickY = 0;
-static int button = 0;
-static int button3 = 0;
+int stickX;
+int stickY;
+int buttonj;
+int button3;
+int button2;
+int button1;
 static int rep = 0;
 int bulletPositions[MAX_BULLETS*2];
 static int bulletCount = 0;

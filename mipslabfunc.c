@@ -286,16 +286,16 @@ void spawn_asteroid (void)
 	}
 }
 
-void spawn_bullet (int* location, int* b_level, int set_b_level, int max)
+void spawn_bullet (int set_bullet_level)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<MAX_BULLETS*2; i+=2)
 	{
-		if (location[i] > 127)
+		if (bulletPositions[i] > 127)
 		{
-			b_level[i] = set_b_level;
-			location[i] = xpos+7;
-			location[i+1] = ypos+2;
+			bullets_level[i/2] = set_bullet_level;
+			bulletPositions[i] = xpos+7;
+			bulletPositions[i+1] = ypos+2;
 			return;
 		}
 	}
@@ -334,7 +334,7 @@ void display_all_bullets
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
-					asthp[j/2]-=b_level[i/2];
+					asthp[j/2]-=(b_level[i/2] + 1);
 					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
@@ -342,7 +342,7 @@ void display_all_bullets
 					}
 				}
 			}
-			display_insert_data(location[i], location[i+1], b_sprite[b_level[i/2]], 3);
+			display_insert_data(location[i], location[i+1], bullet[bullets_level[i/2]], 3);
 			location[i]+=4;
 
 		}
@@ -373,4 +373,20 @@ int collission_check (int x, int y, int* sprite)
 		}
 	}
 	return 0;
+}
+static int power = 0;
+// Chooses an appropriate button to select bullet power
+int pickAmmo(void)
+{
+	if (PORTD & 0x70)
+	{
+		if ((button3)) {
+			power = 2;
+		} else if (button2) {
+			power = 1;
+		} else if (button1) {
+			power = 0;
+		}
+	}
+	return power;
 }

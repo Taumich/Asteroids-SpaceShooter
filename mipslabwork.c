@@ -17,6 +17,9 @@ void user_isr( void )
 
   //checking inputs and timers for spawning of new entities
   rep++;
+  if (rep > 100000) {
+    rep = 0;
+  }
   if (!(rep % SPAWN_INTERVAL) ) {
     if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {

@@ -248,21 +248,21 @@ int randomNumberGenerator (int param)
 //Extra commands for tasks such as spawning and collission calculation
 
 //Asteroid Spawn:
-void reset_asteroid_array(int* location, int max)
+void reset_asteroid_array(void)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<MAX_ASTEROIDS*2; i+=2)
 	{
-		location[i] = AST_INACTIVE;
+		asteroidPositions[i] = AST_INACTIVE;
 	}
 }
 
-void reset_bullet_array(int* location, int max)
+void reset_bullet_array(void)
 {
 	int i;
-	for (i=0; i<max; i+=2)
+	for (i=0; i<MAX_BULLETS*2; i+=2)
 	{
-		location[i] = 128;
+		bulletPositions[i] = 128;
 	}
 }
 
@@ -352,8 +352,8 @@ void display_all_bullets
 		}
   }
 }
-// Collission calculation functions:
 
+// Collission calculation functions:
 int collission_check (int x, int y, int* sprite)
 {
 	int i;
@@ -374,8 +374,9 @@ int collission_check (int x, int y, int* sprite)
 	}
 	return 0;
 }
-static int power = 0;
+
 // Chooses an appropriate button to select bullet power
+static int power = 0;
 int pickAmmo(void)
 {
 	if (PORTD & 0x70)

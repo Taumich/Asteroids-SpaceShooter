@@ -101,8 +101,8 @@ void labinit( void ) {
   IECSET(1) = 0x2;  // Enable ADC interrupts
   // END Initialize ADC
   // Initialize asteroids and bullets
-  reset_asteroid_array(asteroidPositions, MAX_ASTEROIDS*2);
-  reset_bullet_array(bulletPositions, MAX_BULLETS*2);
+  reset_asteroid_array();
+  reset_bullet_array();
   xpos = 10;
   ypos = 10;
   // Enable global interrupts

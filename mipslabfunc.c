@@ -7,6 +7,7 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
+#include "variables.h"
 
 /* Declare a helper function which is local to this file */
 static void num32asc( char * s, int );
@@ -23,7 +24,6 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
-#define AST_INACTIVE -7
 
 /* quicksleep:
    A simple function to create a small delay.
@@ -186,7 +186,7 @@ void display_update(void) {
 	}
 }
 
-void display_update_frame(uint8_t* framebuffer) {
+void display_update_frame() {
 	int i, j;
 	for (i = 0; i < 4; i++) {
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -198,19 +198,15 @@ void display_update_frame(uint8_t* framebuffer) {
 
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		for (j = 0; j < 128; j++) {
-			spi_send_recv(*framebuffer);
-			framebuffer++;
+			spi_send_recv(displaybuffer[j + i*128]);
 		}
 	}
 }
 
-void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sprite_size) {
+void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 	// Conditions for rendering inside the frame
-	if (sprite_size * -1 > x || x > 127) {
+	if (sprite_size * -1 > x || x > 127 || -8 > y || y > 31) {
 		return;	// if out of bounds on x-axis, exit code from here
-	}
-	if (-8 > y || y > 31) {
-		return; // if out of bounds on y-axis, exit code from here
 	}
 
 	int i;	//used for width of the ship
@@ -218,16 +214,16 @@ void display_insert_data(uint8_t* framebuffer, int x, int y, int* sprite, int sp
 	{
 		if(0 < i+x && i+x < 127)
 		{
-			framebuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
-			framebuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
+			displaybuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
+			displaybuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
 		}
 	}
 }
 
-void display_clear(uint8_t* framebuffer) {
+void display_clear() {
 	int i;
 	for (i = 0; i < 512; i++) {
-		*framebuffer++ = 0;
+		displaybuffer[i] = 0;
 	}
 }
 
@@ -270,7 +266,7 @@ void reset_bullet_array(int* location, int max)
 	}
 }
 
-void spawn_asteroid (int *location, int quantity, int* asthp, int max)
+void spawn_asteroid (int *location, int* asthp, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
@@ -289,13 +285,14 @@ void spawn_asteroid (int *location, int quantity, int* asthp, int max)
 	}
 }
 
-void spawn_bullet (int x, int y, int* location, int max)
+void spawn_bullet (int x, int y, int* location, int* b_level, int set_b_level, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
 	{
 		if (location[i] > 127)
 		{
+			b_level[i] = set_b_level;
 			location[i] = x+7;
 			location[i+1] = y+2;
 			return;
@@ -303,14 +300,14 @@ void spawn_bullet (int x, int y, int* location, int max)
 	}
 }
 
-void display_all_asteroids(uint8_t* framebuffer, int* location, int* asthp, int* sprite, int max)
+void display_all_asteroids(int* location, int* asthp, int* sprite, int max)
 {
 	int i;
 	for (i=0; i<max; i+=2)
   	{
 		if (location[i] > AST_INACTIVE) //checking only x-values for active state (not -7)
 		{
-			display_insert_data(framebuffer, location[i], location[i+1], sprite[asthp[i/2]/3], 7);
+			display_insert_data(location[i], location[i+1], sprite[asthp[i/2]/3], 7);
 			location[i]--;
 		}
 		else if (location[i] != AST_INACTIVE)
@@ -321,7 +318,7 @@ void display_all_asteroids(uint8_t* framebuffer, int* location, int* asthp, int*
 }
 
 void display_all_bullets
-(uint8_t* framebuffer, int* location, int* asteroids, int* asthp, int* b_sprite, int* b_level, int maxbul, int maxast)
+(int* location, int* asteroids, int* asthp, int* b_sprite, int* b_level, int maxbul, int maxast)
 {
 	int i;
 	for (i=0; i<maxbul; i+=2)
@@ -336,7 +333,7 @@ void display_all_bullets
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
-					asthp[j/2]-=bullet_data[2];
+					asthp[j/2]-=b_level[i/2];
 					location[i] = 128;
 					if(asthp[j/2] < 1)
 					{
@@ -344,8 +341,8 @@ void display_all_bullets
 					}
 				}
 			}
-			display_insert_data(framebuffer, location[i], location[i+1], b_sprite[b_level[i/2]], 3);
-			location[i]+=bullet_data[1];
+			display_insert_data(location[i], location[i+1], b_sprite[b_level[i/2]], 3);
+			location[i]+=4;
 
 		}
 		else if (location[i] != 128)
@@ -356,7 +353,7 @@ void display_all_bullets
 }
 // Collission calculation functions:
 
-int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
+int collission_check (int x, int y, int* sprite)
 {
 	int i;
 	for(i=x; i < x+7; i++) //i will check framebuffer locations where ship will render. Columns.
@@ -367,7 +364,7 @@ int collission_check (uint8_t* framebuffer, int x, int y, int* sprite)
 			//if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
 			if(1 < i && i < 127)
 			{
-				if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
+				if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
 				{
 					return 1;
 				}

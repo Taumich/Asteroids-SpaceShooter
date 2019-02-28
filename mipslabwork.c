@@ -1,53 +1,12 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
-
-#define MAX_BULLETS 20
-#define BULLET_INTERVAL 4
-#define MAX_ASTEROIDS 15
-#define SPAWN_INTERVAL 20
-
-uint8_t displaybuffer[512];
-// Define list of sprites
-int ship_v1[] = {73,85,85,42,20,28,8};
-int ship_v2[] = {85,127,107,85,85,28,8};
-int ship_v3[] = {54,73,85,107,99,54,20};
-int active_ship[3] = {ship_v1, ship_v2, ship_v3};
-
-int asteroid_1[] = {126,255,255,255,255,255,126};
-int asteroid_2[] = {126,255,207,195,207,255,126};
-int asteroid_3[] = {126,207,195,129,195,207,126};
-int asteroid_4[] = {126,129,129,129,129,129,126};
-int asteroid[4] = {asteroid_4, asteroid_3, asteroid_2, asteroid_1};
-
-int bullet_level1[] = {2,2,0};
-int bullet_level2[] = {2,7,2};
-int bullet_level3[] = {7,5,7};
-//bullet data: {appearance, speed, damage}
-int bullet[3] = {bullet_level1, bullet_level2,bullet_level3};
-int bullets_level[MAX_BULLETS];
-
-//int pixel[1] = {1};
-
-int xpos = 10;
-int ypos = 10;
-int stickX = 0;
-int stickY = 0;
-int button = 0;
-int button3 = 0;
-int rep = 0;
-int bulletPositions[MAX_BULLETS*2];
-int bulletCount = 0;
-int asteroidPositions[MAX_ASTEROIDS*2];
-int asteroidHealth[MAX_ASTEROIDS];
-int asteroidCount = 0;
-int playerEnergy = 8; //health and energy is the same (shields)
-
+#include "variables.h"
 
 /* Interrupt Service Routine */
 void user_isr( void )
 {
-  display_clear(&displaybuffer);
+  display_clear();
   stickX = ADC1BUF0;
   stickY = ADC1BUF1;
   button = !((PORTF & 8) >> 3);
@@ -60,7 +19,7 @@ void user_isr( void )
     if (!(rep % SPAWN_INTERVAL) ) {
         if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
         {
-            spawn_asteroid(asteroidPositions, asteroidCount, asteroidHealth, MAX_ASTEROIDS*2);
+            spawn_asteroid(asteroidPositions, asteroidHealth, MAX_ASTEROIDS*2);
         }
     }
 
@@ -88,37 +47,30 @@ void user_isr( void )
 
     if(button3)
     {
-        bullet[0] = bullet_level2;
-        bullet[1] = 3;
-        bullet[2] = 2;
-    }
-    else
-    {
-        bullet[0] = bullet_level1;
-        bullet[1] = 4;
-        bullet[2] = 1;
+
     }
 
     if ( !(rep % BULLET_INTERVAL) )
     {
-        spawn_bullet(xpos, ypos, bulletPositions, MAX_BULLETS*2);
+        spawn_bullet(xpos, ypos, bulletPositions, bullets_level, 2, MAX_BULLETS*2);
     }
 
 //rendering all active asteroids
-    display_all_asteroids(displaybuffer, asteroidPositions, asteroidHealth, asteroid, MAX_ASTEROIDS*2);
+    display_all_asteroids(asteroidPositions, asteroidHealth, asteroid, MAX_ASTEROIDS*2);
 
 //checking for asteroid collission with ship
-    if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
+    if (collission_check(xpos, ypos, active_ship[1]))
     {
+      score -= 20;
       xpos = 1;
       ypos = 13;
     }
 
 //spawning all active bullets
-    display_all_bullets(displaybuffer, bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+    display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
-    display_insert_data(displaybuffer, xpos, ypos, active_ship[0], 7);
-    display_update_frame(displaybuffer);
+    display_insert_data(xpos, ypos, active_ship[0], 7);
+    display_update_frame();
     IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 

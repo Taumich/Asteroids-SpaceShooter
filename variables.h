@@ -6,7 +6,7 @@
 
 uint8_t displaybuffer[512];
 // Define list of sprites
-static int ship_v1[] = {73,85,85,42,20,28,8};
+static const int ship_v1[] = {73,85,85,42,20,28,8};
 static int ship_v2[] = {85,127,107,85,85,28,8};
 static int ship_v3[] = {54,73,85,107,99,54,20};
 static int active_ship[3] = {ship_v1, ship_v2, ship_v3};
@@ -31,9 +31,9 @@ int ypos;
 int stickX;
 int stickY;
 int buttonj;
+int button4;
 int button3;
 int button2;
-int button1;
 static int rep = 0;
 int bulletPositions[MAX_BULLETS*2];
 static int bulletCount = 0;

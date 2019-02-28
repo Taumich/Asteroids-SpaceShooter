@@ -10,9 +10,9 @@ void user_isr( void )
   stickX = ADC1BUF0;
   stickY = ADC1BUF1;
   buttonj = !((PORTF & 8) >> 3);
+  button4 = (PORTD & 0x80) >> 7;
   button3 = (PORTD & 0x40) >> 6;
   button2 = (PORTD & 0x20) >> 5;
-  button1 = (PORTD & 0x10) >> 4;
   AD1CON1SET = 0x2; // Start sampling
 
   //checking inputs and timers for spawning of new entities
@@ -66,7 +66,7 @@ void user_isr( void )
 //spawning all active bullets
     display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
 
-    display_insert_data(xpos, ypos, active_ship[0], 7);
+    display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
     display_update_frame();
     IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
@@ -82,7 +82,7 @@ void labinit( void ) {
   // Initialize Timer3
   T3CON = 0x0070; // 256x prescaling
   TMR3 = 0; // Clear timer register
-  PR3 = 0x1f00; // Set timer period
+  PR3 = 0x1002; // Set timer period
   T3CONSET = 0x8000;  // Turn on Timer3
   // Initialize PORTB bits 10 and 8 to 1
   TRISB |= 0x0500;

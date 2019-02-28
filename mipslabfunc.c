@@ -380,11 +380,11 @@ int pickAmmo(void)
 {
 	if (PORTD & 0x70)
 	{
-		if ((button3)) {
+		if ((button4)) {
 			power = 2;
-		} else if (button2) {
+		} else if (button3) {
 			power = 1;
-		} else if (button1) {
+		} else if (button2) {
 			power = 0;
 		}
 	}

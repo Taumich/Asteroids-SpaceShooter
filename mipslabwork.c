@@ -94,7 +94,7 @@ void user_isr( void )
 //checking for asteroid collission with ship
     if (collission_check(displaybuffer, xpos, ypos, active_ship[1]))
     {
-      xpos = 0;
+      xpos = 1;
       ypos = 13;
     }
 

@@ -122,7 +122,7 @@ void labwork( void ) {
         IFSCLR(1) = 0x2;  // Clear interrupt flag
         AD1CON1CLR = 0x8000;  // ADC off
         gamemode = 0;
-        break;
+        return;
       }
     }
   }

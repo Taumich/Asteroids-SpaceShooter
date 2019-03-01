@@ -39,22 +39,7 @@ void user_isr( void )
   }
   //Movement
   if (rep % 2) {
-    if (stickX == 0) {
-      if(xpos < 120)
-        xpos++;
-    }
-    else if (stickX == 0x3ff) {
-      if(xpos > 1)
-        xpos--;
-    }
-    if (stickY == 0) {
-      if(ypos > 0)
-        ypos--;
-    }
-    if (stickY == 0x3ff) {
-      if(ypos < 24)
-        ypos++;
-    }
+    stick_actions();
   }
 
   if ( !(rep % BULLET_INTERVAL) )

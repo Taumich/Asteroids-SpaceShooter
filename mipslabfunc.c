@@ -278,6 +278,22 @@ void display_score(void) {
 	}
 }
 
+void display_text(int x, int y, char* s) {
+	int i = 0;
+	int n = 0;
+	while (s[i] != 0) {
+		i++;
+		n++;
+	}
+	int f;
+	for (i = 0; i < 6; i++) {
+		f = numbers+(s[i]-48)*4;
+		if (!(f < numbers)) {
+			display_insert_data(97+(6-n)*5+i*5,0,f,4);
+		}
+	}
+}
+
 void display_clear(void) {
 	int i;
 	for (i = 0; i < 512; i++) {
@@ -435,6 +451,25 @@ int collission_check (int x, int y, int* sprite)
 	return 0;
 }
 
+void stick_actions(void) {
+	if (stickX == 0) {
+      if(xpos < 120)
+        xpos++;
+    }
+    else if (stickX == 0x3ff) {
+      if(xpos > 1)
+        xpos--;
+    }
+    if (stickY == 0) {
+      if(ypos > 0)
+        ypos--;
+    }
+    if (stickY == 0x3ff) {
+      if(ypos < 24)
+        ypos++;
+    }
+}
+
 // Chooses an appropriate button to select bullet power
 static int power = 0;
 int pickAmmo(void)
@@ -485,9 +520,8 @@ void display_energy(void) {
 }
 
 int display_main_menu() {
+	// display_text(0,0,"Space Game 1");
 	display_string(0,"A-STEROID-z");
-	display_string(2,"Press button 4");
-	display_string(3,"to start game!");
 	display_update();
 	while (!button4) {
 		button4 = (PORTD & 0x80) >> 7;

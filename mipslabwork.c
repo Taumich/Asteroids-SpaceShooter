@@ -87,6 +87,7 @@ void user_isr( void )
 
 /* Lab-specific initialization goes here */
 void labinit( void ) {
+  // Initialize LED array
   TRISECLR = 0xff;
   PORTE = 0xff;
   // Digital pin 1 to button
@@ -125,4 +126,19 @@ void labinit( void ) {
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
+  gamemode = 0;
+  display_main_menu();
+  if (gamemode) {
+    labinit();
+    while (1) {
+      if (buttonj) {
+        T3CONCLR = 0x8000; // Timer3 off
+        PORTE = 0x00;
+        IFSCLR(1) = 0x2;  // Clear interrupt flag
+        AD1CON1CLR = 0x8000;  // ADC off
+        gamemode = 0;
+        break;
+      }
+    }
+  }
 }

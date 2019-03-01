@@ -271,8 +271,8 @@ void display_score(void) {
 	}
 	int f;
 	for (i = 0; i < 6; i++) {
-		f = fonts+(p[i]-48)*4;
-		if (!(f < fonts)) {
+		f = numbers+(p[i]-48)*4;
+		if (!(f < numbers)) {
 			display_insert_data(97+(6-n)*5+i*5,0,f,4);
 		}
 	}
@@ -482,4 +482,15 @@ void display_energy(void) {
 		}
 		PORTE = 0x1;
 	}
+}
+
+int display_main_menu() {
+	display_string(0,"A-STEROID-z");
+	display_string(2,"Press button 4");
+	display_string(3,"to start game!");
+	display_update();
+	while (!button4) {
+		button4 = (PORTD & 0x80) >> 7;
+	}
+	gamemode = 1;
 }

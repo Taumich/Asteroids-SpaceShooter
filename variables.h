@@ -6,7 +6,7 @@
 #define SCOREPANEL 63
 
 uint8_t displaybuffer[512];
-static int fonts[] = {
+static int numbers[] = {
   14,17,17,14,
   0,18,31,16,
   25,21,21,18,
@@ -18,6 +18,30 @@ static int fonts[] = {
   10,21,21,10,
   2,21,21,14
 };
+static int letters[] = {
+  0,30,5,5,30,
+  0,31,21,21,10,
+  0,14,17,17,17,
+  0,31,17,17,14,
+  0,31,21,21,17,
+  0,31,5,5,1,
+  0,14,17,21,29,
+  0,31,4,4,31,
+  0,17,31,17,0,
+  0,9,17,17,15,
+  0,31,4,10,17,
+  0,31,16,16,16,
+  31,2,4,2,31,
+  0,31,2,4,31,
+  0,14,17,17,14,
+  0,31,5,5,2,
+  0,14,17,17,46,
+  0,31,5,13,18,
+  0,18,21,21,9,
+  0,1,31,1,0
+
+
+}
 // Define list of sprites
 static int ship_v1[] = {73,85,85,42,20,28,8};
 static int ship_v2[] = {85,127,107,85,85,28,8};
@@ -38,6 +62,7 @@ static int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
 int bullets_level[MAX_BULLETS];
 
 //static int pixel[1] = {1};
+int gamemode;
 
 int xpos;
 int ypos;

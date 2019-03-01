@@ -23,7 +23,14 @@ void user_isr( void )
   if (!(rep % SPAWN_INTERVAL) ) {
     if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {
-      spawn_asteroid(0);
+        if(randomNumberGenerator(score) > 0) //random gives between 0 and 9
+        {
+            spawn_asteroid(0); // spawn normal
+        }
+        else
+        {
+            spawn_asteroid(1); //spawn giant
+        }
     }
   }
   if (pickAmmo() == 1) {
@@ -51,7 +58,7 @@ void user_isr( void )
   display_all_asteroids();
 
   //checking for asteroid collission with ship
-  if (collission_check(xpos, ypos, active_ship[1]))
+  if (collission_check(active_ship[1]))
   {
     score -= 20;
     playerEnergy -= 4;
@@ -60,7 +67,7 @@ void user_isr( void )
   }
 
   //spawning all active bullets
-  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet);
+  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth);
 
   display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
   display_score();

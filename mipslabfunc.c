@@ -278,43 +278,18 @@ void display_score(void) {
 	}
 }
 
-void display_text(int x, int y, char* string) {
+void display_text(int x, int y, char* s) {
 	int i = 0;
 	int n = 0;
-	while (string[i] >= 32) {
+	while (s[i] != 0) {
 		i++;
 		n++;
 	}
-	int bytecode;
-	for (i = 0; i < n; i++) {
-		bytecode = string[i];
-		if (bytecode > 47 && bytecode < 58) {
-			bytecode -= 48;
-			bytecode *= 4;
-			bytecode += numbers;
-			display_insert_data(x+i*5,y,bytecode,4);
-		} else if (bytecode > 64 && bytecode < 91) {
-			bytecode -= 65;
-			bytecode *= 5;
-			bytecode += letters;
-			if (!bytecode) {
-				if (!bytecode) {
-					display_insert_data(x+(i+2)*3,y,bytecode,3);
-				}
-				display_insert_data(x+(i+1)*4,y,bytecode,4);
-			}
-			display_insert_data(x+i*5,y,bytecode,5);
-		} else if (bytecode > 96 && bytecode < 123) {
-			bytecode -= 71;
-			bytecode *= 5;
-			bytecode += letters;
-			if (!bytecode) {
-				if (!bytecode) {
-					display_insert_data(x+(i+2)*3,y,bytecode,3);
-				}
-				display_insert_data(x+(i+1)*4,y,bytecode,4);
-			}
-			display_insert_data(x+i*5,y,bytecode,5);
+	int f;
+	for (i = 0; i < 6; i++) {
+		f = numbers+(s[i]-48)*4;
+		if (!(f < numbers)) {
+			display_insert_data(97+(6-n)*5+i*5,0,f,4);
 		}
 	}
 }
@@ -418,7 +393,7 @@ void display_all_asteroids(void)
 }
 
 void display_all_bullets
-(int* location, int* asteroids, int* asthp) //replace all parameters with variables.h
+(int* location, int* asteroids, int* asthp, int* b_sprite)
 {
 	int i;
 	for (i=0; i<MAX_BULLETS*2; i+=2)
@@ -455,13 +430,13 @@ void display_all_bullets
 }
 
 // Collission calculation functions:
-int collission_check (int* sprite) //TODO:replace sprite with variables.h def
+int collission_check (int x, int y, int* sprite)
 {
 	int i;
-	for(i=xpos; i < xpos+7; i++) //i will check framebuffer locations where ship will render. Columns.
+	for(i=x; i < x+7; i++) //i will check framebuffer locations where ship will render. Columns.
 	{
 		int j;
-		for (j=ypos; j < ypos+7; j++) //j will check each pixel in y-axis.
+		for (j=y; j < y+7; j++) //j will check each pixel in y-axis.
 		{
 			//if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
 			if(1 < i && i < 127)
@@ -545,7 +520,7 @@ void display_energy(void) {
 }
 
 int display_main_menu() {
-	// display_text(0,0,"1");
+	// display_text(0,0,"Space Game 1");
 	display_string(0,"A-STEROID-z");
 	display_update();
 	while (!button4) {

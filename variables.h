@@ -41,12 +41,13 @@ static int letters[] = {
   0,1,31,1,0
 
 
-}
+};
 // Define list of sprites
 static int ship_v1[] = {73,85,85,42,20,28,8};
 static int ship_v2[] = {85,127,107,85,85,28,8};
 static int ship_v3[] = {54,73,85,107,99,54,20};
-static int active_ship[3] = {ship_v1, ship_v2, ship_v3};
+static int giant[] = {9096,20194,24632,57806,18948,16934,16706,37003,43033,38929,36945,16394,8454,23560,13300,6144};
+static int active_ship[3] = {giant, ship_v2, ship_v3};
 
 static int asteroid_1[] = {126,255,255,255,255,255,126};
 static int asteroid_2[] = {126,255,207,195,207,255,126};

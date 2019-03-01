@@ -23,7 +23,7 @@ void user_isr( void )
   if (!(rep % SPAWN_INTERVAL) ) {
     if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {
-      spawn_asteroid();
+      spawn_asteroid(0);
     }
   }
   if (pickAmmo() == 1) {
@@ -75,7 +75,7 @@ void user_isr( void )
   }
 
   //spawning all active bullets
-  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet, bullets_level, MAX_BULLETS*2, MAX_ASTEROIDS*2);
+  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet);
 
   display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
   display_score();

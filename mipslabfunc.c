@@ -324,7 +324,7 @@ void reset_bullet_array(void)
 	}
 }
 
-void spawn_asteroid (void)
+void spawn_asteroid (int giant)
 {
 	int i;
 	for (i=0; i<MAX_ASTEROIDS*2; i+=2)
@@ -335,10 +335,10 @@ void spawn_asteroid (void)
 			int randVal = randomNumberGenerator(asteroidPositions[0]);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
-			int newLoc = 2*randomNumberGenerator(randVal) + randVal/2;
-			asteroidPositions[i+1] = (newLoc > 25 || newLoc < 1)? 12 : newLoc;
+			int newLoc = (giant? 2:1)*randomNumberGenerator(randVal) + randVal/2;
+			asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
 			// location[i+1] = (location == asteroidPositions)? 1 : 20;
-			asteroidHealth[i/2] = 10;
+			asteroidHealth[i/2] = (giant? 30:10);
 			return;
 		}
 	}
@@ -377,22 +377,22 @@ void display_all_asteroids(void)
 }
 
 void display_all_bullets
-(int* location, int* asteroids, int* asthp, int* b_sprite, int* b_level, int maxbul, int maxast)
+(int* location, int* asteroids, int* asthp, int* b_sprite)
 {
 	int i;
-	for (i=0; i<maxbul; i+=2)
+	for (i=0; i<MAX_BULLETS*2; i+=2)
  	{
 		if (location[i] < 127) //checking only x-values for active state (not 127)
 		{
 			// check which asteroid collides with bullet
 			int j;
-			for (j=0; j<maxast; j+=2)
+			for (j=0; j<MAX_ASTEROIDS*2; j+=2)
 			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
 				if(	asteroids[j] != AST_INACTIVE &&
 					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
 					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
 				{
-					asthp[j/2]-=(b_level[i/2] + 1);
+					asthp[j/2]-=(bullets_level[i/2] + 1);
 					score++;
 					location[i] = 128;
 					if(asthp[j/2] < 1)

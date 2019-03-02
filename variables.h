@@ -72,6 +72,9 @@ static int letters[] = {
   0,44,40,44,60, // y
   0,26,26,22,0 // z
 };
+static int symbols[] = {
+  0,0,0,0,0 // space
+};
 // Define list of sprites
 static int ship_v1[] = {73,85,85,42,20,28,8};
 static int ship_v2[] = {85,127,107,85,85,28,8};

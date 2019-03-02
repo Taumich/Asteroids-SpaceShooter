@@ -55,8 +55,7 @@ void user_isr( void )
   {
     score -= 20;
     playerEnergy -= 4;
-    xpos = 1;
-    ypos = 13;
+    xpos = 0;
   }
 
   //spawning all active bullets

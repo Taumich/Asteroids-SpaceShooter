@@ -57,6 +57,8 @@ int main(void) {
 	display_init();
 	display_update();
 
+	labinit();
+
 	while( 1 )
 	{
 		labwork();

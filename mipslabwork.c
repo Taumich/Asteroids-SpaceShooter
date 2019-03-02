@@ -6,65 +6,28 @@
 /* Interrupt Service Routine */
 void user_isr( void )
 {
-  display_clear();
-  stickX = ADC1BUF0;
-  stickY = ADC1BUF1;
-  buttonj = !((PORTF & 8) >> 3);
-  button4 = (PORTD & 0x80) >> 7;
-  button3 = (PORTD & 0x40) >> 6;
-  button2 = (PORTD & 0x20) >> 5;
-  AD1CON1SET = 0x2; // Start sampling
-
-  //checking inputs and timers for spawning of new entities
-  rep++;
-  if (rep > 100000) {
-    rep = 0;
-  }
-  if (!(rep % SPAWN_INTERVAL) ) {
-    if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
-    {
-      spawn_asteroid(0);
+  if (gamemode == 2) {
+    play_game();
+  } else if (gamemode == 1) {
+    display_clear();
+    display_main_menu();
+    display_update_frame();
+    while (!button4) {
+  		button4 = (PORTD & 0x80) >> 7;
+  	}
+  	gamemode = 2;
+  } else if (!gamemode) {
+    display_clear();
+    if (!rep) {
+      display_startup_screen();
+    }
+    rep++;
+    if (rep == 120) {
+      gamemode++;
+      PORTE = 0;
+      rep = 0;
     }
   }
-  if (pickAmmo() == 1) {
-    if (!(rep % 20)) {
-      playerEnergy--;
-    }
-  } else if (pickAmmo() == 2) {
-    if (!(rep % 15)) {
-      playerEnergy--;
-    }
-  } else if (!(rep % 40)) {
-    playerEnergy++;
-  }
-  //Movement
-  if (rep % 2) {
-    stick_actions();
-  }
-
-  if ( !(rep % BULLET_INTERVAL) )
-  {
-    spawn_bullet(pickAmmo());
-  }
-
-  //rendering all active asteroids
-  display_all_asteroids();
-
-  //checking for asteroid collission with ship
-  if (collission_check(xpos, ypos, active_ship[1]))
-  {
-    score -= 20;
-    playerEnergy -= 4;
-    xpos = 0;
-  }
-
-  //spawning all active bullets
-  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth, bullet);
-
-  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
-  display_score();
-  display_energy();
-  display_update_frame();
   IFSCLR(1) = 0x2;  // Clear interrupt flag
 }
 
@@ -100,6 +63,7 @@ void labinit( void ) {
   // Initialize asteroids and bullets
   reset_asteroid_array();
   reset_bullet_array();
+  gamemode = 0;
   xpos = 10;
   ypos = 10;
   score = 0;
@@ -110,17 +74,12 @@ void labinit( void ) {
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
-  gamemode = 0;
-  display_main_menu();
   if (gamemode) {
-    labinit();
     while (1) {
       if (buttonj) {
-        T3CONCLR = 0x8000; // Timer3 off
-        PORTE = 0x00;
-        IFSCLR(1) = 0x2;  // Clear interrupt flag
-        AD1CON1CLR = 0x8000;  // ADC off
-        gamemode = 0;
+        while (buttonj);
+        display_clear();
+        gamemode = 1;
         return;
       }
     }

@@ -247,10 +247,16 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size) {
 	int i;	//used for width of the ship
 	for (i = 0; i < sprite_size; i++) //column
 	{
-		if(0 < i+x && i+x < 127)
+		if(0 < i+x && i+x < 127 && -1 < i+y && i+y < 31)
 		{
 			displaybuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
 			displaybuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
+			if(sprite_size > 9) {
+				displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 10-(y%8));
+			}
+			//
+			//
+			//
 		}
 	}
 }
@@ -279,13 +285,14 @@ void display_score(void) {
 }
 
 void display_text(int x, int y, char* string) {
-	// display_debug(string[4]);
-	// display_update();
 	int i, currentx = x;
 	int* charcode;
 	for (i = 0; string[i] != 47; i++) {
 		if (string[i] == 32) {
 			currentx += 3;
+		} else if (string[i] == 45) {
+			display_insert_data(currentx, y, numbers+40, 4);
+			currentx += 5;
 		} else if (string[i] > 47 && string[i] < 58) {
 			charcode = numbers + (string[i]-48)*4;
 			display_insert_data(currentx, y, charcode, 4);
@@ -543,13 +550,75 @@ void display_energy(void) {
 	}
 }
 
-int display_main_menu() {
+void display_startup_screen(void) {
 	display_text(1,0,"Welcome to A-STEROID-z/");
+	display_text(1,16,"Made by CINTE-Soft Studios/");
 	display_update_frame();
-	// display_string(0,"A-STEROID-z");
-	// display_update();
-	while (!button4) {
-		button4 = (PORTD & 0x80) >> 7;
-	}
-	gamemode = 1;
+}
+
+void display_main_menu(void) {
+	display_text(1,0,"Main Menu/");
+	display_text(70,0,"A-STEROID-z/");
+}
+
+void play_game(void) {
+	display_clear();
+  stickX = ADC1BUF0;
+  stickY = ADC1BUF1;
+  buttonj = !((PORTF & 8) >> 3);
+  button4 = (PORTD & 0x80) >> 7;
+  button3 = (PORTD & 0x40) >> 6;
+  button2 = (PORTD & 0x20) >> 5;
+  AD1CON1SET = 0x2; // Start sampling
+
+  //checking inputs and timers for spawning of new entities
+  rep++;
+  if (rep > 100000) {
+    rep = 0;
+  }
+  if (!(rep % SPAWN_INTERVAL) ) {
+    if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
+    {
+      spawn_asteroid(0);
+    }
+  }
+  if (pickAmmo() == 1) {
+    if (!(rep % 20)) {
+      playerEnergy--;
+    }
+  } else if (pickAmmo() == 2) {
+    if (!(rep % 15)) {
+      playerEnergy--;
+    }
+  } else if (!(rep % 40)) {
+    playerEnergy++;
+  }
+  //Movement
+  if (rep % 2) {
+    stick_actions();
+  }
+
+  if ( !(rep % BULLET_INTERVAL) )
+  {
+    spawn_bullet(pickAmmo());
+  }
+
+  //rendering all active asteroids
+  display_all_asteroids();
+
+  //checking for asteroid collission with ship
+  if (collission_check(active_ship[1]))
+  {
+    score -= 20;
+    playerEnergy -= 4;
+    xpos = 0;
+  }
+
+  //spawning all active bullets
+  display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth);
+
+  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
+  display_score();
+  display_energy();
+  display_update_frame();
 }

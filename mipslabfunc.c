@@ -279,44 +279,43 @@ void display_score(void) {
 }
 
 void display_text(int x, int y, char* string) {
-	display_debug(string[4]);
-	display_update();
-	// int i, currentx = x;
-	// int* charcode;
-	// for (i = 0; string[i] != 47; i++) {
-	// 	if (string[i] == 32) {
-	// 		display_insert_data(currentx, y, symbols[0], 3);
-	// 	} else if (string[i] > 47 && string[i] < 58) {
-	// 		charcode = numbers + (string[i]-48)*4;
-	// 		display_insert_data(currentx, y, charcode, 4);
-	// 		currentx += 5;
-	// 	} else if (string[i] > 64 && string[i] < 91) {
-	// 		charcode = letters + (string[i]-65)*5;
-	// 		if (*charcode == 0) {
-	// 			display_insert_data(currentx, y, charcode, 5);
-	// 			currentx += 5;
-	// 		} else {
-	// 			display_insert_data(currentx, y, charcode, 5);
-	// 			currentx += 6;
-	// 		}
-	// 	} else if (string[i] > 96 && string[i] < 123) {
-	// 		charcode = letters + (string[i]-71)*5;
-	// 		if (*charcode == 0) {
-	// 			if (*(charcode+1) == 0) {
-	// 				currentx--;
-	// 				display_insert_data(currentx, y, charcode, 5);
-	// 				currentx += 4;
-	// 			} else {
-	// 				display_insert_data(currentx, y, charcode, 5);
-	// 				currentx += 5;
-	// 			}
-	// 		} else {
-	// 			display_insert_data(currentx, y, charcode, 5);
-	// 			currentx += 6;
-	// 		}
-	// 	}
-	// }
-	// display_update_frame();
+	// display_debug(string[4]);
+	// display_update();
+	int i, currentx = x;
+	int* charcode;
+	for (i = 0; string[i] != 47; i++) {
+		if (string[i] == 32) {
+			currentx += 3;
+		} else if (string[i] > 47 && string[i] < 58) {
+			charcode = numbers + (string[i]-48)*4;
+			display_insert_data(currentx, y, charcode, 4);
+			currentx += 5;
+		} else if (string[i] > 64 && string[i] < 91) {
+			charcode = letters + (string[i]-65)*5;
+			if (*charcode == 0) {
+				display_insert_data(currentx, y, charcode, 5);
+				currentx += 5;
+			} else {
+				display_insert_data(currentx, y, charcode, 5);
+				currentx += 6;
+			}
+		} else if (string[i] > 96 && string[i] < 123) {
+			charcode = letters + (string[i]-71)*5;
+			if (*charcode == 0) {
+				if (*(charcode+1) == 0) {
+					currentx--;
+					display_insert_data(currentx, y, charcode, 5);
+					currentx += 4;
+				} else {
+					display_insert_data(currentx, y, charcode, 5);
+					currentx += 5;
+				}
+			} else {
+				display_insert_data(currentx, y, charcode, 5);
+				currentx += 6;
+			}
+		}
+	}
 }
 
 void display_clear(void) {
@@ -545,7 +544,8 @@ void display_energy(void) {
 }
 
 int display_main_menu() {
-	display_text(0,0,"Lost in space/");
+	display_text(1,0,"Welcome to A-STEROID-z/");
+	display_update_frame();
 	// display_string(0,"A-STEROID-z");
 	// display_update();
 	while (!button4) {

@@ -6,17 +6,19 @@
 /* Interrupt Service Routine */
 void user_isr( void )
 {
-  if (gamemode > 19 && gamemode < 30) {
+  if (gamemode > 19 && gamemode < 28) {
+    // Controls
     display_clear();
     display_controls();
+    display_cursor();
     stickX = ADC1BUF0;
     if (stickX <= 0x2ff) {
       gamemode += stickX_gate();
     }
     if (gamemode == 19) {
       gamemode = 20;
-    } else if (gamemode == 30) {
-      gamemode = 29;
+    } else if (gamemode == 28) {
+      gamemode = 27;
     }
     buttonj = !((PORTF & 8) >> 3);
     if (buttonj) {
@@ -27,9 +29,27 @@ void user_isr( void )
     }
     display_update_frame();
   }
+  if (gamemode == 12) {
+    display_ingame_screen(35,10,"GAME OVER$");
+    display_ingame_screen(35,18,"Press to return$");
+    display_update_frame();
+    buttonj = !((PORTF & 8) >> 3);
+    if (buttonj) {
+      while (buttonj) {
+        buttonj = !((PORTF & 8) >> 3);
+      }
+      gamemode = 1;
+      reset_asteroid_array();
+      reset_bullet_array();
+      xpos = 10;
+      ypos = 10;
+      score = 0;
+      playerEnergy = 8;
+    }
+  }
   if (gamemode == 11) {
     // Pause screen
-    display_pause_screen();
+    display_ingame_screen(35,10,"Paused$");
     display_update_frame();
     stickX = ADC1BUF0;
     stickY = ADC1BUF1;

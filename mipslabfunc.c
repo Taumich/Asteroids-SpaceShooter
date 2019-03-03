@@ -415,13 +415,13 @@ void spawn_asteroid (int giant)
 	{
 		if (asteroidPositions[i] <= AST_INACTIVE)
 		{
-			asteroidPositions[i] = 128;
-			int randVal = randomNumberGenerator(asteroidPositions[0]);
+			asteroidPositions[i] = 127;
+			int randVal = randomNumberGenerator(score);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
 			int newLoc = (giant? 2:1)*randomNumberGenerator(randVal) + randVal/2;
-			asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
-			// location[i+1] = (location == asteroidPositions)? 1 : 20;
+			// asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
+			asteroidPositions[i+1] = newLoc*1.7;
 			asteroidHealth[i/2] = (giant? 30:10);
 			return;
 		}
@@ -648,12 +648,6 @@ void display_main_menu(void) {
 void display_controls(void) {
 	// Title bar
 	display_text(1,0,"Controls$");
-	// Content
-	display_text(8,8,"Use the joystick to move.$");
-	display_text(8,16,"Destroy asteroids to gain$");
-	// Control 1
-	display_insert_data(1,24,symbols+18,6);
-	display_text(8,25," - Next page$");
 	// Control 2
 	display_insert_data(77,24,symbols+30,6);
 	display_text(84,25," - Back$");
@@ -666,15 +660,84 @@ void display_cursor(void) {
 		display_insert_data(1, 16, numbers+56, 4);
 	} else if (gamemode == 3) {
 		display_insert_data(70, 8, numbers+56, 4);
+	} else if (gamemode == 20) {
+		// Page number
+		display_text(100,0,"Page 1$");
+		// Content
+		display_text(8,8,"Use the joystick to move.$");
+		display_text(8,16,"Destroy asteroids to gain$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 21) {
+		// Page number
+		display_text(100,0,"Page 2$");
+		// Content
+		display_text(8,8,"points. Do not forget the$");
+		display_text(8,16,"energy bar. Using heavier$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 22) {
+		// Page number
+		display_text(100,0,"Page 3$");
+		// Content
+		display_text(8,8,"weapons drains energy and$");
+		display_text(8,16,"crashing costs 4 energy.$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 23) {
+		// Page number
+		display_text(100,0,"Page 4$");
+		// Content
+		display_text(8,8,"Press the onboard buttons$");
+		display_text(8,16,"to change your weapon.$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 24) {
+		// Page number
+		display_text(100,0,"Page 5$");
+		// Content
+		display_text(8,8,"You can pause at any time$");
+		display_text(8,16,"by pressing the joystick.$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 25) {
+		// Page number
+		display_text(100,0,"Page 6$");
+		// Content
+		display_text(8,8,"Pressing again exits the$");
+		display_text(8,16,"game to the main menu.$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 26) {
+		// Page number
+		display_text(100,0,"Page 7$");
+		// Content
+		display_text(8,8,"Any movement resumes the$");
+		display_text(8,16,"game. Score the highest$");
+		// Control 1
+		display_insert_data(1,25,symbols+18,6);
+		display_text(8,25," - Next page$");
+	} else if (gamemode == 27) {
+		// Page number
+		display_text(100,0,"Page 8$");
+		// Content
+		display_text(8,8,"and you will end up on the$");
+		display_text(8,16,"scoreboard. Good luck.$");
 	}
 }
 
-void display_pause_screen(void) {
+void display_ingame_screen(int x, int y, char* string) {
 	int i;
-	for (i = 0; i < 30; i++) {
-		displaybuffer[159+i] &= 0;
+	for (i = 0; i < 128; i++) {
+		displaybuffer[i+128*(y/8)] &= 0;
 	}
-	display_text(34, 8, "Paused$");
+	display_text(x, y, string);
 }
 
 void play_game(void) {
@@ -737,4 +800,8 @@ void play_game(void) {
   display_score();
   display_energy();
   display_update_frame();
+	if (playerEnergy < 0) {
+		gamemode += 2;
+		return;
+	}
 }

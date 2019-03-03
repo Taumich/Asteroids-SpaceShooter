@@ -20,7 +20,9 @@ static int numbers[] = {
   0,4,4,4, // -
   24,12,6,3, // /
   0,0,10,0, // :
-  1,21,5,2 // ?
+  1,21,5,2, // ?
+  0,31,14,4, // Cursor
+  0,0,16,0 // .
 };
 static int letters[] = {
   0,30,5,5,30, // A
@@ -112,7 +114,7 @@ int xpos;
 int ypos;
 int stickX;
 int stickY;
-static int stickPull = 0;
+int stickPull;
 int buttonj;
 int button4;
 int button3;

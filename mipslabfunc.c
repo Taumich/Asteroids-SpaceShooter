@@ -287,26 +287,37 @@ void display_score(void) {
 void display_text(int x, int y, char* string) {
 	int i, currentx = x;
 	int* charcode;
-	for (i = 0; string[i] != 47; i++) {
+	for (i = 0; string[i] != 36; i++) {
 		if (string[i] == 32) {
+			// Space
 			currentx += 3;
 		} else if (string[i] == 45) {
+			// -
 			display_insert_data(currentx, y, numbers+40, 4);
 			currentx += 5;
+		} else if (string[i] == 46) {
+			// .
+			display_insert_data(currentx, y, numbers+60, 4);
+			currentx += 5;
 		} else if (string[i] == 47) {
+			// /
 			display_insert_data(currentx, y, numbers+44, 4);
 			currentx += 5;
 		} else if (string[i] > 47 && string[i] < 58) {
+			// 0-9
 			charcode = numbers + (string[i]-48)*4;
 			display_insert_data(currentx, y, charcode, 4);
 			currentx += 5;
 		} else if (string[i] == 58) {
+			// :
 			display_insert_data(currentx, y, numbers+48, 4);
 			currentx += 5;
 		} else if (string[i] == 63) {
+			// ?
 			display_insert_data(currentx, y, numbers+52, 4);
 			currentx += 5;
 		} else if (string[i] > 64 && string[i] < 91) {
+			// A-Z
 			charcode = letters + (string[i]-65)*5;
 			if (*charcode == 0) {
 				display_insert_data(currentx, y, charcode, 5);
@@ -316,6 +327,7 @@ void display_text(int x, int y, char* string) {
 				currentx += 6;
 			}
 		} else if (string[i] > 96 && string[i] < 123) {
+			// a-z
 			charcode = letters + (string[i]-71)*5;
 			if (*charcode == 0) {
 				if (*(charcode+1) == 0) {
@@ -510,19 +522,38 @@ void stick_actions(void) {
     }
 }
 
-int stick_gate(void) {
-	if (stickY == 0 && stickPull == 0) {
+int stickX_gate(void) {
+	// Functions for X direction
+	if (stickX == 0 && stickPull == 0) {
 		stickPull = 1;
 		return 1;
 	}
-	if (stickY == 0x3ff && stickPull == 0) {
+	if (stickX == 0x3ff && stickPull == 0) {
 		stickPull = 1;
 		return -1;
+	}
+	if (stickX == 0x2ff && stickPull == 1) {
+		stickPull = 0;
+		return 0;
+	}
+	return 0;
+}
+
+int stickY_gate(void) {
+	// Fucntions for Y direction
+	if (stickY == 0 && stickPull == 0) {
+		stickPull = 1;
+		return -1;
+	}
+	if (stickY == 0x3ff && stickPull == 0) {
+		stickPull = 1;
+		return 1;
 	}
 	if (stickY == 0x2ff && stickPull == 1) {
 		stickPull = 0;
 		return 0;
 	}
+	return 0;
 }
 
 // Chooses an appropriate button to select bullet power
@@ -575,16 +606,59 @@ void display_energy(void) {
 }
 
 void display_startup_screen(void) {
-	display_text(1,0,"Welcome to A-STEROID-z/");
-	display_text(1,16,"Made by CINTE-Soft Studios/");
+	display_text(1,0,"Welcome to A-STEROID-z$");
+	display_text(1,16,"Made by CINTE-Soft Studios$");
 	display_update_frame();
 }
 
 void display_main_menu(void) {
-	display_text(1,0,"Main Menu/");
-	display_text(70,0,"A-STEROID-z/");
-	display_insert_data(1,24,symbols,6);
-	display_text(8,24,"4 - Start/");
+	// Title bar
+	display_text(1,0,"Main Menu$");
+	display_text(70,0,"A-STEROID-z$");
+	// Options
+	display_text(8,8,"Play game$");
+	display_text(8,16,"Controls$");
+	display_text(77,8,"Highscores$");
+	// Control 1
+	display_insert_data(1,24,symbols+12,6);
+	display_text(8,25,"/$");
+	display_insert_data(12,24,symbols+24,6);
+	display_text(19,25," - Up/Down$");
+	// Control 2
+	display_insert_data(77,24,symbols+30,6);
+	display_text(84,25," - Select$");
+}
+
+void display_controls(void) {
+	// Title bar
+	display_text(1,0,"Controls$");
+	// Content
+	display_text(8,8,"Use the joystick to move.$");
+	display_text(8,16,"Destroy asteroids to gain$");
+	// Control 1
+	display_insert_data(1,24,symbols+18,6);
+	display_text(8,25," - Next page$");
+	// Control 2
+	display_insert_data(77,24,symbols+30,6);
+	display_text(84,25," - Back$");
+}
+
+void display_cursor(void) {
+	if (gamemode == 1) {
+		display_insert_data(1, 8, numbers+56, 4);
+	} else if (gamemode == 2) {
+		display_insert_data(1, 16, numbers+56, 4);
+	} else if (gamemode == 3) {
+		display_insert_data(70, 8, numbers+56, 4);
+	}
+}
+
+void display_pause_screen(void) {
+	int i;
+	for (i = 0; i < 30; i++) {
+		displaybuffer[159+i] &= 0;
+	}
+	display_text(34, 8, "Paused$");
 }
 
 void play_game(void) {

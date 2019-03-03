@@ -6,17 +6,60 @@
 /* Interrupt Service Routine */
 void user_isr( void )
 {
-  if (gamemode == 2) {
+  if (gamemode > 19 && gamemode < 30) {
+    display_clear();
+    display_controls();
+    stickX = ADC1BUF0;
+    if (stickX <= 0x2ff) {
+      gamemode += stickX_gate();
+    }
+    if (gamemode == 19) {
+      gamemode = 20;
+    } else if (gamemode == 30) {
+      gamemode = 29;
+    }
+    buttonj = !((PORTF & 8) >> 3);
+    if (buttonj) {
+      while (buttonj) {
+        buttonj = !((PORTF & 8) >> 3);
+      }
+      gamemode = 1;
+    }
+    display_update_frame();
+  }
+  if (gamemode == 11) {
+    // Pause screen
+    display_pause_screen();
+    display_update_frame();
+    stickX = ADC1BUF0;
+    stickY = ADC1BUF1;
+    buttonj = !((PORTF & 8) >> 3);
+  }
+  if (gamemode == 10) {
+    // Main game
     play_game();
-  } else if (gamemode == 1) {
+  } else if (gamemode > 0 && gamemode < 10) {
+    // Main menu
     display_clear();
     display_main_menu();
+    display_cursor();
+    stickY = ADC1BUF1;
+    gamemode += stickY_gate();
+    if (gamemode == 0) {
+      gamemode = 1;
+    } else if (gamemode == 4) {
+      gamemode = 3;
+    }
+    buttonj = !((PORTF & 8) >> 3);
+    if (buttonj) {
+      while (buttonj) {
+        buttonj = !((PORTF & 8) >> 3);
+      }
+      gamemode *= 10;
+    }
     display_update_frame();
-    while (!button4) {
-  		button4 = (PORTD & 0x80) >> 7;
-  	}
-  	gamemode = 2;
   } else if (!gamemode) {
+    // Splash screen
     display_clear();
     if (!rep) {
       display_startup_screen();
@@ -64,6 +107,7 @@ void labinit( void ) {
   reset_asteroid_array();
   reset_bullet_array();
   gamemode = 0;
+  stickPull = 0;
   xpos = 10;
   ypos = 10;
   score = 0;
@@ -74,11 +118,24 @@ void labinit( void ) {
 
 /* This function is called repetitively from the main program */
 void labwork( void ) {
-  if (gamemode) {
+  if (gamemode == 10) {
     while (1) {
       if (buttonj) {
         while (buttonj);
+        gamemode++;
+        return;
+      }
+    }
+  }
+  if (gamemode == 11) {
+    while (1) {
+      if (stickX != 0x2ff || stickY != 0x2ff) {
         display_clear();
+        gamemode--;
+        return;
+      }
+      if (buttonj) {
+        while (buttonj);
         gamemode = 1;
         return;
       }

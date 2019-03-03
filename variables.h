@@ -18,6 +18,7 @@ static int numbers[] = {
   10,21,21,10, // 8
   2,21,21,14, // 9
   0,4,4,4, // -
+  24,12,6,3, // /
   0,0,10,0, // :
   1,21,5,2 // ?
 };
@@ -73,7 +74,15 @@ static int letters[] = {
   12,16,8,16,12, // w
   0,20,8,20,0, // x
   0,44,40,40,60, // y
-  0,26,26,22,0 // z
+  0,26,26,22,0, // z
+};
+static int symbols[] = {
+  0,14,17,21,17,14, // Button
+  14,17,17,14,4,31, // Stick left
+  0,38,41,57,41,38, // Stick up
+  31,4,14,17,17,14, // Stick right
+  0,25,37,39,37,25, // Stick down
+  12,18,45,45,18,12 // Stick press
 };
 // Define list of sprites
 static int ship_v1[] = {73,85,85,42,20,28,8};
@@ -103,6 +112,7 @@ int xpos;
 int ypos;
 int stickX;
 int stickY;
+static int stickPull = 0;
 int buttonj;
 int button4;
 int button3;

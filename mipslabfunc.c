@@ -293,9 +293,18 @@ void display_text(int x, int y, char* string) {
 		} else if (string[i] == 45) {
 			display_insert_data(currentx, y, numbers+40, 4);
 			currentx += 5;
+		} else if (string[i] == 47) {
+			display_insert_data(currentx, y, numbers+44, 4);
+			currentx += 5;
 		} else if (string[i] > 47 && string[i] < 58) {
 			charcode = numbers + (string[i]-48)*4;
 			display_insert_data(currentx, y, charcode, 4);
+			currentx += 5;
+		} else if (string[i] == 58) {
+			display_insert_data(currentx, y, numbers+48, 4);
+			currentx += 5;
+		} else if (string[i] == 63) {
+			display_insert_data(currentx, y, numbers+52, 4);
 			currentx += 5;
 		} else if (string[i] > 64 && string[i] < 91) {
 			charcode = letters + (string[i]-65)*5;
@@ -501,6 +510,21 @@ void stick_actions(void) {
     }
 }
 
+int stick_gate(void) {
+	if (stickY == 0 && stickPull == 0) {
+		stickPull = 1;
+		return 1;
+	}
+	if (stickY == 0x3ff && stickPull == 0) {
+		stickPull = 1;
+		return -1;
+	}
+	if (stickY == 0x2ff && stickPull == 1) {
+		stickPull = 0;
+		return 0;
+	}
+}
+
 // Chooses an appropriate button to select bullet power
 static int power = 0;
 int pickAmmo(void)
@@ -559,6 +583,8 @@ void display_startup_screen(void) {
 void display_main_menu(void) {
 	display_text(1,0,"Main Menu/");
 	display_text(70,0,"A-STEROID-z/");
+	display_insert_data(1,24,symbols,6);
+	display_text(8,24,"4 - Start/");
 }
 
 void play_game(void) {

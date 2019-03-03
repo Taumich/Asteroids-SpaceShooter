@@ -238,25 +238,41 @@ void display_update_frame(void) {
 	}
 }
 
-void display_insert_data(int x, int y, int* sprite, int sprite_size) {
-	// Conditions for rendering inside the frame
-	if (sprite_size * -1 > x || x > 127 || -8 > y || y > 31) {
-		return;	// if out of bounds on x-axis, exit code from here
+void display_insert_data(int x, int y, int* sprite, int sprite_size)
+{
+	// Conditions for rendering inside the frame, skipping the drawing of any object that won't be visible.
+	if (sprite_size * -1 > x || x > 127 || -8 > y || y > 31)
+	{
+		return;	// If out of bounds on x- or y-axis, exit code from here.
 	}
 
-	int i;	//used for width of the ship
-	for (i = 0; i < sprite_size; i++) //column
+	int i;	//used for width and height of the art. All art is rendered in an i-by-i square of pixels.
+	for (i = 0; i < sprite_size; i++) // Column
 	{
+		// These checks will only allow any pixels of any art to be drawn if the pixel is located inside of the screen.
 		if(0 < i+x && i+x < 127 && -1 < i+y && i+y < 31)
 		{
+			// All pixels are ORed into the 512 element wide uint array. the target pixel on the Chipkit display
+			// is decided by (x+i) (x-coordinate to place the art + specific pixel of art to draw) the y-coordinate of
+			// the pixel to draw is decided by "y%8" for shifting the art's pixels back to the start of a display column.
+			// and "128*(y/8)" for shifting the art to the next display segment which is located exactly 128 elements away
+			//for seamless drawing between pages.
 			displaybuffer[i+x+ 128*(y/8)] |= (sprite[i] << (y%8));
 			displaybuffer[i+x+ 128*((y/8)+1)] |= (sprite[i] >> 8-(y%8));
-			if(sprite_size > 9) {
-				displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 10-(y%8));
+
+			// Only bothers rendering art with a third segment if the art can span over three segments (has to be 10 pixels wide or more).
+			if(sprite_size > 9)
+			{
+//				1. Code that mathematically should work flawlessly for 3-segment-spanning:
+				//displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 12-(y%8));
+
+//				2. A test that doesn't crash but still only repeats the second segment's values:
+//					(PS: you can try changing the "8-(y%8)" to "9-(y%8)" and other higher values)
+				displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 8-(y%8));
+
+//				3. A test that shouldn't work but might work anyway? (it is technically equal to the 1st option):
+				//displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] << (y%8)-8);
 			}
-			//
-			//
-			//
 		}
 	}
 }

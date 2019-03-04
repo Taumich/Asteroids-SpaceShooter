@@ -6,6 +6,11 @@
 /* Interrupt Service Routine */
 void user_isr( void )
 {
+  if (gamemode == 30) {
+    display_clear();
+    display_cursor();
+    display_update_frame();
+  }
   if (gamemode > 19 && gamemode < 28) {
     // Controls
     display_clear();

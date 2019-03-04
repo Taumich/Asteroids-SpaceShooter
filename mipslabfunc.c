@@ -419,9 +419,9 @@ void spawn_asteroid (int giant)
 			int randVal = randomNumberGenerator(score);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
-			int newLoc = (giant? 2:1)*randomNumberGenerator(randVal) + randVal/2;
-			// asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
-			asteroidPositions[i+1] = newLoc*1.7;
+			int newLoc = (giant? 1:2)*randomNumberGenerator(randVal) + randVal/2;
+			 asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
+			//asteroidPositions[i+1] = newLoc*1.7;
 			asteroidHealth[i/2] = (giant? 30:10);
 			return;
 		}
@@ -450,8 +450,15 @@ void display_all_asteroids(void)
   	{
 		if (asteroidPositions[i] > AST_INACTIVE) //checking only x-values for active state (not -7)
 		{
-			display_insert_data(asteroidPositions[i], asteroidPositions[i+1], asteroid[asteroidHealth[i/2]/3], 7);
-			asteroidPositions[i]--;
+			if (asteroidHealth[i/2] > 10) {
+				display_insert_data(asteroidPositions[i]-5, asteroidPositions[i+1]-5, giant, 16);
+				if (rep % 3) {
+					asteroidPositions[i]--;
+				}
+			} else {
+				display_insert_data(asteroidPositions[i], asteroidPositions[i+1], asteroid[asteroidHealth[i/2]/3], 7);
+				asteroidPositions[i]--;
+			}
 		}
 		else if (asteroidPositions[i] != AST_INACTIVE)
 		{
@@ -487,7 +494,7 @@ void display_all_bullets
 				}
 			}
 			display_insert_data(location[i], location[i+1], bullet[bullets_level[i/2]], 3);
-			location[i]+=4;
+			location[i]+= (4-bullets_level[i/2]);
 
 		}
 		else if (location[i] != 128)
@@ -506,8 +513,8 @@ int collission_check (int* sprite) //TODO:replace sprite with variables.h def
 		int j;
 		for (j=ypos; j < ypos+7; j++) //j will check each pixel in y-axis.
 		{
-			//if ( (framebuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-x] >> j-y) & 0x1 == 1)
-			if(1 < i && i < 127)
+			if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-xpos] >> j-ypos) & 0x1 == 1)
+			//if(1 < i && i < 127)
 			{
 				if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
 				{
@@ -729,6 +736,50 @@ void display_cursor(void) {
 		// Content
 		display_text(8,8,"and you will end up on the$");
 		display_text(8,16,"scoreboard. Good luck.$");
+	} else if (gamemode == 30) {
+		// Title bar
+		display_text(1,0,"Highscores$");
+		display_text(70,0,"$");
+		int i = 0;
+		int n = 0;
+		char* hs1 = itoaconv(highscores[0]);
+		char* hs2 = itoaconv(highscores[1]);
+		char* hs3 = itoaconv(highscores[2]);
+		while (hs1[i] >= 48) {
+			n++;
+			i++;
+		}
+		int* f;
+		for (i = 0; i < 6; i++) {
+			f = numbers+(hs1[i]-48)*4;
+			if (!(f < numbers)) {
+				display_insert_data(97+(6-n)*5+i*5,8,f,4);
+			}
+		}
+		i = 0;
+		n = 0;
+		while (hs2[i] >= 48) {
+			n++;
+			i++;
+		}
+		for (i = 0; i < 6; i++) {
+			f = numbers+(hs2[i]-48)*4;
+			if (!(f < numbers)) {
+				display_insert_data(97+(6-n)*5+i*5,16,f,4);
+			}
+		}
+		i = 0;
+		n = 0;
+		while (hs3[i] >= 48) {
+			n++;
+			i++;
+		}
+		for (i = 0; i < 6; i++) {
+			f = numbers+(hs3[i]-48)*4;
+			if (!(f < numbers)) {
+				display_insert_data(97+(6-n)*5+i*5,24,f,4);
+			}
+		}
 	}
 }
 
@@ -758,7 +809,7 @@ void play_game(void) {
   if (!(rep % SPAWN_INTERVAL) ) {
     if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {
-      spawn_asteroid(0);
+      spawn_asteroid(randomNumberGenerator(score) < SPAWN_GIANT);
     }
   }
   if (pickAmmo() == 1) {
@@ -791,12 +842,16 @@ void play_game(void) {
     score -= 20;
     playerEnergy -= 4;
     xpos = 0;
+	//if () {
+	//
+	//
+	//}
   }
 
   //spawning all active bullets
   display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth);
 
-  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 16);
+  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
   display_score();
   display_energy();
   display_update_frame();

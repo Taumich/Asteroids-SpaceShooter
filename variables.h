@@ -1,7 +1,7 @@
 #define MAX_BULLETS 20
 #define BULLET_INTERVAL 4
 #define MAX_ASTEROIDS 25
-#define SPAWN_INTERVAL 20
+#define SPAWN_INTERVAL 17
 #define SPAWN_GIANT 1
 #define AST_INACTIVE -7
 #define SCOREPANEL 63
@@ -91,8 +91,7 @@ static int symbols[] = {
 static int ship_v1[] = {73,85,85,42,20,28,8};
 static int ship_v2[] = {85,127,107,85,85,28,8};
 static int ship_v3[] = {54,73,85,107,99,54,20};
-static int giant[] = {9096,20194,24632,57806,18948,16934,16706,37003,43033,38929,36945,16394,8454,23560,13300,6144};
-static int active_ship[3] = {giant, ship_v2, ship_v3};
+static int active_ship[3] = {ship_v1, ship_v2, ship_v3};
 
 static int asteroid_1[] = {126,255,255,255,255,255,126};
 static int asteroid_2[] = {126,255,207,195,207,255,126};
@@ -100,6 +99,7 @@ static int asteroid_3[] = {126,207,195,129,195,207,126};
 static int asteroid_4[] = {126,129,129,129,129,129,126};
 static int asteroid[4] = {asteroid_4, asteroid_3, asteroid_2, asteroid_1};
 
+static int giant[] = {9096,20194,24632,57806,18948,16934,16706,37003,43033,38929,36945,16394,8454,23560,13300,6144};
 
 static int bullet_level1[] = {2,2,0};
 static int bullet_level2[] = {2,7,2};
@@ -122,8 +122,9 @@ int button3;
 int button2;
 static int rep = 0;
 int bulletPositions[MAX_BULLETS*2];
-static int bulletCount = 0;
 int asteroidPositions[MAX_ASTEROIDS*2];
 int asteroidHealth[MAX_ASTEROIDS];
 int playerEnergy; //health and energy is the same (shields)
 int score;
+
+static int highscores[3] = {32,187,50};

@@ -268,7 +268,7 @@ void display_insert_data(int x, int y, int* sprite, int sprite_size)
 
 //				2. A test that doesn't crash but still only repeats the second segment's values:
 //					(PS: you can try changing the "8-(y%8)" to "9-(y%8)" and other higher values)
-				displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 8-(y%8));
+				displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] >> 16-(y%8));
 
 //				3. A test that shouldn't work but might work anyway? (it is technically equal to the 1st option):
 				//displaybuffer[i+x+ 128*((y/8)+2)] |= (sprite[i] << (y%8)-8);
@@ -796,7 +796,7 @@ void play_game(void) {
   //spawning all active bullets
   display_all_bullets(bulletPositions, asteroidPositions, asteroidHealth);
 
-  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
+  display_insert_data(xpos, ypos, active_ship[pickAmmo()], 16);
   display_score();
   display_energy();
   display_update_frame();

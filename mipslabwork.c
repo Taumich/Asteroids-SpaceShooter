@@ -30,8 +30,8 @@ void user_isr( void )
     display_update_frame();
   }
   if (gamemode == 12) {
-    display_ingame_screen(35,10,"GAME OVER$");
-    display_ingame_screen(35,18,"Press to return$");
+    display_ingame_screen(35,9,"GAME OVER$");
+    display_ingame_screen(35,17,"Press to return$");
     display_update_frame();
     buttonj = !((PORTF & 8) >> 3);
     if (buttonj) {
@@ -49,7 +49,7 @@ void user_isr( void )
   }
   if (gamemode == 11) {
     // Pause screen
-    display_ingame_screen(35,10,"Paused$");
+    display_ingame_screen(35,9,"Paused$");
     display_update_frame();
     stickX = ADC1BUF0;
     stickY = ADC1BUF1;

@@ -6,9 +6,29 @@
 /* Interrupt Service Routine */
 void user_isr( void )
 {
+  if (gamemode == 31) {
+    display_cursor();
+    buttonj = !((PORTF & 8) >> 3);
+    if (buttonj) {
+      while (buttonj) {
+        buttonj = !((PORTF & 8) >> 3);
+      }
+      gamemode = 1;
+      return;
+    }
+    display_update_frame();
+  }
   if (gamemode == 30) {
     display_clear();
     display_cursor();
+    buttonj = !((PORTF & 8) >> 3);
+    if (buttonj) {
+      while (buttonj) {
+        buttonj = !((PORTF & 8) >> 3);
+      }
+      gamemode = 1;
+      return;
+    }
     display_update_frame();
   }
   if (gamemode > 19 && gamemode < 28) {
@@ -43,9 +63,12 @@ void user_isr( void )
       while (buttonj) {
         buttonj = !((PORTF & 8) >> 3);
       }
-      gamemode = 1;
+      display_clear();
+      gamemode = 31;
+      sort_highscores();
       reset_asteroid_array();
       reset_bullet_array();
+      progress = 0;
       xpos = 10;
       ypos = 10;
       score = 0;
@@ -119,7 +142,7 @@ void labinit( void ) {
   AD1CHS = 0x0a080000; // Select input pins to ADC
   AD1PCFG = 0xfaff;  // AN8 and AN10 to analog input
   AD1CSSL = 0x0500; // Select AN8 and AN10 for scan sequence
-  AD1CON1 = 0x0444; // FORM: 16 bit fraction, timer 3 control, sample auto-start
+  AD1CON1 = 0x0444; // FORM: 16 bit int, timer 3 control, sample auto-start
   AD1CON2 = 0x4404;  // Internal voltage +, external voltage -, scan, interrupt every two samples, 16 word buffer, always MUX A
   AD1CON3 = 0x8408; // Internal clock, 4x prescaling
   AD1CON1SET = 0x8000;  // Enable ADC
@@ -131,8 +154,11 @@ void labinit( void ) {
   // Initialize asteroids and bullets
   reset_asteroid_array();
   reset_bullet_array();
+  reset_highscore_array();
   gamemode = 0;
+  progress = 0;
   stickPull = 0;
+  pressed = 0;
   xpos = 10;
   ypos = 10;
   score = 0;

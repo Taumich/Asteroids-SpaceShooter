@@ -238,7 +238,7 @@ void display_update_frame(void) {
 	}
 }
 
-void display_insert_data(int x, int y, int* sprite, int sprite_size)
+void display_insert_data(char x, char y, int* sprite, int sprite_size)
 {
 	// Conditions for rendering inside the frame, skipping the drawing of any object that won't be visible.
 	if (sprite_size * -1 > x || x > 127 || -8 > y || y > 31)
@@ -408,6 +408,13 @@ void reset_bullet_array(void)
 	}
 }
 
+void reset_highscore_array(void) {
+	int i;
+	for (i=0; i<3; i++) {
+		highscores[i] = 0;
+	}
+}
+
 void spawn_asteroid (int giant)
 {
 	int i;
@@ -419,8 +426,8 @@ void spawn_asteroid (int giant)
 			int randVal = randomNumberGenerator(score);
 			//randomized y-location:
 			//int newLoc = location[0] % 11 + location[2] % 5 + location[4] % 7;
-			int newLoc = (giant? 1:2)*randomNumberGenerator(randVal) + randVal/2;
-			 asteroidPositions[i+1] = ( newLoc > (giant? 15:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
+			int newLoc = (giant? 1:2)*randomNumberGenerator(randVal) + randVal/1.8;
+			asteroidPositions[i+1] = ( newLoc > (giant? 18:25) || newLoc < (giant? 5:1) )? 12 : newLoc;
 			//asteroidPositions[i+1] = newLoc*1.7;
 			asteroidHealth[i/2] = (giant? 30:10);
 			return;
@@ -479,9 +486,11 @@ void display_all_bullets
 			int j;
 			for (j=0; j<MAX_ASTEROIDS*2; j+=2)
 			{	// asteroids[j+1] < location[i+1] && location[i+1] < asteroids[j+1]+7
+				int giant_min = (asteroidHealth[j/2] > 10)? -5 : 0;
+				int giant_max = (asteroidHealth[j/2] > 10)? 11 : 7;
 				if(	asteroids[j] != AST_INACTIVE &&
-					asteroids[j]+7 >= location[i] && location[i]+3 >= asteroids[j] &&
-					asteroids[j+1] <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+7)
+					asteroids[j]+giant_max >= location[i] && location[i]+1 >= asteroids[j]+giant_min &&
+					asteroids[j+1]+giant_min <= location[i+1]+1 && location[i+1]+1 <= asteroids[j+1]+giant_max)
 				{
 					asthp[j/2]-=(bullets_level[i/2] + 1);
 					score++;
@@ -505,15 +514,15 @@ void display_all_bullets
 }
 
 // Collission calculation functions:
-int collission_check (int* sprite) //TODO:replace sprite with variables.h def
+int collission_check ()
 {
-	int i;
+	char i;
 	for(i=xpos; i < xpos+7; i++) //i will check framebuffer locations where ship will render. Columns.
 	{
 		int j;
 		for (j=ypos; j < ypos+7; j++) //j will check each pixel in y-axis.
 		{
-			if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (sprite[i-xpos] >> j-ypos) & 0x1 == 1)
+			if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1 && (ship_v1[i-xpos] >> j-ypos) & 0x1 == 1)
 			//if(1 < i && i < 127)
 			{
 				if ( (displaybuffer[i+ 127*(j/8)] >> j%8) & 0x1 == 1)
@@ -579,19 +588,52 @@ int stickY_gate(void) {
 	return 0;
 }
 
+int button4_gate() {
+	if ((PORTD & 0x80) >> 7 && pressed == 0) {
+		pressed = 1;
+		return 1;
+	}
+	if (!((PORTD & 0x80) >> 7) && pressed == 1) {
+		pressed = 0;
+		return 0;
+	}
+	return 0;
+}
+
+int button3_gate() {
+	if ((PORTD & 0x40) >> 6 && pressed == 0) {
+		pressed = 1;
+		return 1;
+	}
+	if (!((PORTD & 0x40) >> 6) && pressed == 1) {
+		pressed = 0;
+		return 0;
+	}
+	return 0;
+}
+
+int button2_gate() {
+	if ((PORTD & 0x20) >> 5 && pressed == 0) {
+		pressed = 1;
+		return 1;
+	}
+	if (!((PORTD & 0x20) >> 5) && pressed == 1) {
+		pressed = 0;
+		return 0;
+	}
+	return 0;
+}
+
 // Chooses an appropriate button to select bullet power
 static int power = 0;
 int pickAmmo(void)
 {
-	if (PORTD & 0x70)
-	{
-		if ((button4)) {
-			power = 2;
-		} else if (button3) {
-			power = 1;
-		} else if (button2) {
-			power = 0;
-		}
+	if (button4_gate() && playerEnergy > 1) {
+		power = 2;
+	} else if (button3_gate() && playerEnergy > 1) {
+		power = 1;
+	} else if (button2_gate() && playerEnergy > 1) {
+		power = 0;
 	}
 	return power;
 }
@@ -690,7 +732,7 @@ void display_cursor(void) {
 		display_text(100,0,"Page 3$");
 		// Content
 		display_text(8,8,"weapons drains energy and$");
-		display_text(8,16,"crashing costs 4 energy.$");
+		display_text(8,16,"crashing costs 5 points.$");
 		// Control 1
 		display_insert_data(1,25,symbols+18,6);
 		display_text(8,25," - Next page$");
@@ -736,15 +778,17 @@ void display_cursor(void) {
 		// Content
 		display_text(8,8,"and you will end up on the$");
 		display_text(8,16,"scoreboard. Good luck.$");
-	} else if (gamemode == 30) {
+	} else if (gamemode == 30 || gamemode == 31) {
 		// Title bar
 		display_text(1,0,"Highscores$");
+		display_text(93,0,"All time$");
 		display_text(70,0,"$");
+		// Control 1
+		display_insert_data(1,24,symbols+30,6);
+		display_text(8,25," - Back$");
 		int i = 0;
 		int n = 0;
 		char* hs1 = itoaconv(highscores[0]);
-		char* hs2 = itoaconv(highscores[1]);
-		char* hs3 = itoaconv(highscores[2]);
 		while (hs1[i] >= 48) {
 			n++;
 			i++;
@@ -758,6 +802,7 @@ void display_cursor(void) {
 		}
 		i = 0;
 		n = 0;
+		char* hs2 = itoaconv(highscores[1]);
 		while (hs2[i] >= 48) {
 			n++;
 			i++;
@@ -770,6 +815,7 @@ void display_cursor(void) {
 		}
 		i = 0;
 		n = 0;
+		char* hs3 = itoaconv(highscores[2]);
 		while (hs3[i] >= 48) {
 			n++;
 			i++;
@@ -778,6 +824,57 @@ void display_cursor(void) {
 			f = numbers+(hs3[i]-48)*4;
 			if (!(f < numbers)) {
 				display_insert_data(97+(6-n)*5+i*5,24,f,4);
+			}
+		}
+	}
+}
+
+void sort_highscores(void) {
+	int i, n, t;
+	display_text(1,12,"Your score: $");
+	i = 0;
+	n = 0;
+	char* y = itoaconv(score);
+	while (y[i] >= 48) {
+		n++;
+		i++;
+	}
+	int* f;
+	for (i = 0; i < 6; i++) {
+		f = numbers+(y[i]-48)*4;
+		if (!(f < numbers)) {
+			display_insert_data(56+i*5,12,f,4);
+		}
+	}
+	for (i = 0; i < 3; i++) {
+		if (score > highscores[i]) {
+			t = highscores[i];
+			highscores[i] = score;
+			score = t;
+		}
+	}
+}
+
+void crash(void)
+{
+	int j;
+	for (j = 0; j < MAX_ASTEROIDS; j++) {
+		int giant_min = (asteroidHealth[j] > 10)? -5 : 0;
+		int giant_max = (asteroidHealth[j] > 10)? 11 : 7;
+
+		if(	asteroidPositions[(j*2)] != AST_INACTIVE &&
+			asteroidPositions[(j*2)]+giant_max >= xpos && xpos+7 >= asteroidPositions[(j*2)]+giant_min &&
+			asteroidPositions[(j*2)+1]+giant_min <= ypos+7 && ypos <= asteroidPositions[(j*2)+1]+giant_max)
+		{
+			if(asteroidHealth[j] < 1)
+			{
+				asteroidPositions[j*2] = AST_INACTIVE;
+			}
+			else
+			{
+				asteroidHealth[j] -= 3;
+				score -= 5;
+			    playerEnergy -= 1;
 			}
 		}
 	}
@@ -803,10 +900,11 @@ void play_game(void) {
 
   //checking inputs and timers for spawning of new entities
   rep++;
-  if (rep > 100000) {
+  if (rep > 200) {
+		progress++;
     rep = 0;
   }
-  if (!(rep % SPAWN_INTERVAL) ) {
+  if (!(rep % (SPAWN_INTERVAL - progress) ) ) {
     if(randomNumberGenerator(rep + bulletPositions[0] + asteroidPositions[0]) >= 5)
     {
       spawn_asteroid(randomNumberGenerator(score) < SPAWN_GIANT);
@@ -836,16 +934,11 @@ void play_game(void) {
   //rendering all active asteroids
   display_all_asteroids();
 
+	display_energy();
   //checking for asteroid collission with ship
   if (collission_check(active_ship[1]))
   {
-    score -= 20;
-    playerEnergy -= 4;
-    xpos = 0;
-	//if () {
-	//
-	//
-	//}
+		crash();
   }
 
   //spawning all active bullets
@@ -853,9 +946,9 @@ void play_game(void) {
 
   display_insert_data(xpos, ypos, active_ship[pickAmmo()], 7);
   display_score();
-  display_energy();
   display_update_frame();
-	if (playerEnergy < 0) {
+	if (playerEnergy == 0) {
+		PORTE = 0;
 		gamemode += 2;
 		return;
 	}

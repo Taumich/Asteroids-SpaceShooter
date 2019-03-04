@@ -1,7 +1,7 @@
 #define MAX_BULLETS 20
 #define BULLET_INTERVAL 4
-#define MAX_ASTEROIDS 25
-#define SPAWN_INTERVAL 17
+#define MAX_ASTEROIDS 20
+#define SPAWN_INTERVAL 20
 #define SPAWN_GIANT 1
 #define AST_INACTIVE -7
 #define SCOREPANEL 63
@@ -106,16 +106,18 @@ static int bullet_level2[] = {2,7,2};
 static int bullet_level3[] = {7,5,7};
 //bullet data: {appearance, speed, damage}
 static int bullet[3] = {bullet_level1, bullet_level2, bullet_level3};
-int bullets_level[MAX_BULLETS];
+char bullets_level[MAX_BULLETS];
 
 //static int pixel[1] = {1};
 int gamemode;
+int progress;
 
-int xpos;
-int ypos;
+char xpos;
+char ypos;
 int stickX;
 int stickY;
 int stickPull;
+int pressed;
 int buttonj;
 int button4;
 int button3;
@@ -127,4 +129,4 @@ int asteroidHealth[MAX_ASTEROIDS];
 int playerEnergy; //health and energy is the same (shields)
 int score;
 
-static int highscores[3] = {32,187,50};
+int highscores[3];
